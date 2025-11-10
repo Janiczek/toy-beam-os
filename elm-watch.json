@@ -1,0 +1,17 @@
+{
+    "targets": {
+        "App": {
+            "inputs": [
+                "src/Main.elm"
+            ],
+            "output": "./dist/app.js"
+        },
+        "Book": {
+            "inputs": [
+                "book/src/Book.elm"
+            ],
+            "output": "./dist/book.js"
+        }
+    },
+    "serve": "./dist"
+}
