@@ -1,12 +1,20 @@
 module Book exposing (main)
 
+import Chapters.Color
+import Chapters.Divider
 import Chapters.Window
 import ElmBook
+import ElmBook.ThemeOptions
 
 
 main : ElmBook.Book ()
 main =
     ElmBook.book "Toy BEAM OS"
+        |> ElmBook.withThemeOptions
+            [ ElmBook.ThemeOptions.useHashBasedNavigation
+            ]
         |> ElmBook.withChapters
-            [ Chapters.Window.chapter
+            [ Chapters.Color.chapter
+            , Chapters.Window.chapter
+            , Chapters.Divider.chapter
             ]

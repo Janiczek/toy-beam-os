@@ -47,4 +47,7 @@ view model =
     UI.Window.view
         { title = "Hello, World!"
         , content = Html.text "Hello, World!"
+        , statusBar =
+            [ { label = "PID: 21", onClick = Nothing }
+            ]
         }
