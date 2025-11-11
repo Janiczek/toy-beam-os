@@ -17,3 +17,10 @@ html, body {
     font-family: 'Geneva 9.2', sans-serif;
     font-size: 16px;
 }
+
+.window-button {
+    background-position: 0 0;
+}
+.window-button:active {
+    background-position: 13px 0;
+}

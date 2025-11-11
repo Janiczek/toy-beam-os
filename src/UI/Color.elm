@@ -6,9 +6,11 @@ type alias Color =
     { activeWindowOuterBorder : String
     , activeWindowInnerBottomRightBorder : String
     , activeWindowInnerTopLeftBorder : String
+    , inactiveWindowOuterBorder: String
 
     -- chrome
-    , chromeBg : String
+    , activeChromeBg : String
+    , inactiveChromeBg : String
 
     -- window content
     , windowContentBorder : String
@@ -16,8 +18,10 @@ type alias Color =
     , windowContentCanvasBg : String
 
     -- text
-    , statusBarText : String
-    , windowTitleText : String
+    , activeStatusBarText : String
+    , inactiveStatusBarText : String
+    , activeWindowTitleText : String
+    , inactiveWindowTitleText : String
 
     -- divider
     , dividerBg : String
@@ -31,9 +35,11 @@ color =
     { activeWindowOuterBorder = "#262626"
     , activeWindowInnerBottomRightBorder = "#8a8a8a"
     , activeWindowInnerTopLeftBorder = "#bbbbbb"
+    , inactiveWindowOuterBorder = "#a2a2a2"
 
     -- chrome
-    , chromeBg = "#cccccc"
+    , activeChromeBg = "#cccccc"
+    , inactiveChromeBg = "#dddddd"
 
     -- window content
     , windowContentBorder = "#a8a8a8"
@@ -41,8 +47,10 @@ color =
     , windowContentCanvasBg = "#ffffff"
 
     -- text
-    , statusBarText = "#000000"
-    , windowTitleText = "#262626"
+    , activeStatusBarText = "#000000"
+    , inactiveStatusBarText = "#8a8a8a"
+    , activeWindowTitleText = "#262626"
+    , inactiveWindowTitleText = "#818181"
 
     -- divider
     , dividerBg = "#888888"

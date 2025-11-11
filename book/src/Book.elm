@@ -3,6 +3,7 @@ module Book exposing (main)
 import Chapters.Color
 import Chapters.Divider
 import Chapters.Window
+import Chapters.WindowButton
 import ElmBook
 import ElmBook.ThemeOptions
 
@@ -15,6 +16,7 @@ main =
             ]
         |> ElmBook.withChapters
             [ Chapters.Color.chapter
-            , Chapters.Window.chapter
             , Chapters.Divider.chapter
+            , Chapters.WindowButton.chapter
+            , Chapters.Window.chapter
             ]
