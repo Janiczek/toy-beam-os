@@ -1,0 +1,40 @@
+<svg width="16" height="20" viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 19H2V18H0V8H2V5H3V4H4V2H8V19Z" fill="#DDDDDD"/>
+<rect x="2" y="4" width="1" height="1" fill="white"/>
+<rect x="1" y="3" width="3" height="1" fill="#EEEEEE"/>
+<rect x="3" y="2" width="1" height="1" fill="white"/>
+<rect x="5" y="1" width="1" height="1" fill="white"/>
+<rect x="6" width="2" height="1" fill="#EEEEEE"/>
+<rect y="19" width="8" height="1" fill="#262626"/>
+<rect y="8" width="1" height="11" fill="white"/>
+<rect x="1" y="5" width="1" height="3" fill="white"/>
+<rect x="1" y="8" width="1" height="11" fill="#EEEEEE"/>
+<rect y="5" width="1" height="3" fill="#EEEEEE"/>
+<rect x="1" y="4" width="1" height="1" fill="#EEEEEE"/>
+<rect x="2" y="2" width="1" height="1" fill="#EEEEEE"/>
+<rect x="4" y="1" width="1" height="1" fill="#EEEEEE"/>
+<rect x="3" y="1" width="1" height="1" fill="#EEEEEE"/>
+<path d="M2 3H1V5H0V0H4V1H3V2H2V3Z" fill="black"/>
+<rect x="4" width="2" height="1" fill="#EEEEEE"/>
+<rect y="18" width="8" height="1" fill="#BBBBBB"/>
+<rect x="6" y="1" width="2" height="1" fill="#DDDDDD"/>
+<path d="M8 19H14V18H16V8H14V5H13V4H12V2H8V19Z" fill="#DDDDDD"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 14 4)" fill="white"/>
+<rect width="3" height="1" transform="matrix(-1 0 0 1 15 3)" fill="#EEEEEE"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 13 2)" fill="white"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 11 1)" fill="white"/>
+<rect width="2" height="1" transform="matrix(-1 0 0 1 10 0)" fill="#EEEEEE"/>
+<rect width="8" height="1" transform="matrix(-1 0 0 1 16 19)" fill="#262626"/>
+<rect width="1" height="11" transform="matrix(-1 0 0 1 16 8)" fill="white"/>
+<rect width="1" height="3" transform="matrix(-1 0 0 1 15 5)" fill="white"/>
+<rect width="1" height="11" transform="matrix(-1 0 0 1 15 8)" fill="#EEEEEE"/>
+<rect width="1" height="3" transform="matrix(-1 0 0 1 16 5)" fill="#EEEEEE"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 15 4)" fill="#EEEEEE"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 14 2)" fill="#EEEEEE"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 12 1)" fill="#EEEEEE"/>
+<rect width="1" height="1" transform="matrix(-1 0 0 1 13 1)" fill="#EEEEEE"/>
+<rect width="2" height="1" transform="matrix(-1 0 0 1 12 0)" fill="#EEEEEE"/>
+<rect width="8" height="1" transform="matrix(-1 0 0 1 16 18)" fill="#BBBBBB"/>
+<rect width="2" height="1" transform="matrix(-1 0 0 1 10 1)" fill="#DDDDDD"/>
+<path d="M14 3H15V5H16V0H12V1H13V2H14V3Z" fill="black"/>
+</svg>

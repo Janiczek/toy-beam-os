@@ -87,10 +87,7 @@ viewTitle { isActive, title } =
     Html.div
         [ Html.Attributes.style "padding-left" "3px"
         , Html.Attributes.style "padding-bottom" "2px"
-        , Html.Attributes.style "font-family" "ChiKareGo2, sans-serif"
-        , Html.Attributes.style "font-size" "16px"
-        , Html.Attributes.style "image-rendering" "pixelated"
-        , Html.Attributes.style "text-rendering" "optimizeSpeed"
+        , Html.Attributes.style "font-family" "Charcoal, sans-serif"
         , Html.Attributes.style "color"
             (if isActive then
                 color.activeWindowTitleText
@@ -146,10 +143,6 @@ viewStatusBarItem : { config | isActive : Bool } -> StatusBarItem msg -> Html ms
 viewStatusBarItem { isActive } item =
     Html.div
         [ Html.Attributes.style "display" "flex"
-        , Html.Attributes.style "font-family" "Geneva 9.2"
-        , Html.Attributes.style "font-size" "16px"
-        , Html.Attributes.style "image-rendering" "pixelated"
-        , Html.Attributes.style "text-rendering" "optimizeSpeed"
         , Html.Attributes.style "color"
             (if isActive then
                 color.activeStatusBarText

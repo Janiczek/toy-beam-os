@@ -29,7 +29,7 @@ chapter =
               )
             , ( "No status bar, active"
               , UI.Window.view
-                    { title = "Counter"
+                    { title = "About This Computer"
                     , content = Html.text "Test"
                     , isActive = True
                     , statusBar = []
@@ -39,7 +39,7 @@ chapter =
               )
             , ( "Full, inactive"
               , UI.Window.view
-                    { title = "Counter"
+                    { title = "Control Panels"
                     , content = Html.text "Test"
                     , isActive = False
                     , statusBar =
@@ -56,7 +56,7 @@ chapter =
               )
             , ( "No status bar, inactive"
               , UI.Window.view
-                    { title = "Counter"
+                    { title = "General Controls"
                     , content = Html.text "Test"
                     , isActive = False
                     , statusBar = []
