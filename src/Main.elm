@@ -82,6 +82,20 @@ init () =
     , Cmd.none
     )
 
+focusWindow : Int -> Model -> Model
+focusWindow id model =
+             { model
+                | windows =
+                    model.windows
+                        |> List.sortBy
+                            (\( _, window ) ->
+                                if window.id == id then
+                                    0
+
+                                else
+                                    1
+                            )
+              }
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -96,16 +110,21 @@ update msg model =
             )
 
         WindowDragStart id position ->
-            ( { model
-                | dragging =
-                    DraggingWindow
-                        { windowId = id
-                        , startClientXY = position
-                        , currentClientXY = position
-                        }
-              }
-            , Cmd.none
-            )
+            if model.dragging == NoDragging then
+                ( { model
+                    | dragging =
+                        DraggingWindow
+                            { windowId = id
+                            , startClientXY = position
+                            , currentClientXY = position
+                            }
+                  }
+                  |> focusWindow id
+                , Cmd.none
+                )
+
+            else
+                ( model, Cmd.none )
 
         DragMove newClientXY ->
             ( { model
@@ -188,10 +207,5 @@ view model =
                           }
                         )
                     )
-        , onWindowDragStart =
-            if model.dragging == NoDragging then
-                Just WindowDragStart
-
-            else
-                Nothing
+        , onWindowDragStart = WindowDragStart
         }

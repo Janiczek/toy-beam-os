@@ -24,7 +24,7 @@ type alias Config msg =
     -- The first window is active, the rest are in the background (dimmed)
     -- The window order determines the z-index of the windows.
     { windows : List (ScreenWindow msg)
-    , onWindowDragStart : Maybe (Int -> XY -> msg)
+    , onWindowDragStart : Int -> XY -> msg
     }
 
 
@@ -66,7 +66,7 @@ view config =
                                 , statusBar = window.statusBar
                                 , onClose = window.onClose
                                 , onGraph = window.onGraph
-                                , onDragStart = config.onWindowDragStart |> Maybe.map (\onDragStart -> onDragStart window.id)
+                                , onDragStart = Just (config.onWindowDragStart window.id)
                                 , isActive = z == maxZ
                                 }
                             ]
