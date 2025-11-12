@@ -22,6 +22,7 @@ type alias Config msg =
     , onClose : Maybe msg
     , onGraph : Maybe msg
     , onDragStart : Maybe (XY -> msg)
+    , onFocus : Maybe msg
     }
 
 
@@ -50,6 +51,7 @@ view config =
              else
                 color.inactiveChromeBg
             )
+        , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
         ]
         [ Html.div
             ([ [ Html.Attributes.style "border-width" "1px"

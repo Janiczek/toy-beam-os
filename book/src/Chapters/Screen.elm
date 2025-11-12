@@ -37,6 +37,7 @@ chapter =
                           )
                         ]
                       , onWindowDragStart = \a b -> ElmBook.Actions.logActionWithString "window dragged" (Debug.toString (a,b))
+                      , onWindowFocus = ElmBook.Actions.logActionWith String.fromInt "window focused"
                     }
               )
             ]

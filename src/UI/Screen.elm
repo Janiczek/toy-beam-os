@@ -25,13 +25,15 @@ type alias Config msg =
     -- The window order determines the z-index of the windows.
     { windows : List (ScreenWindow msg)
     , onWindowDragStart : Int -> XY -> msg
+    , onWindowFocus : Int -> msg
     }
 
 
 view : Config msg -> Html msg
 view config =
     let
-        maxZ = List.length config.windows - 1
+        maxZ =
+            List.length config.windows - 1
     in
     Html.div
         [ Html.Attributes.style "width" "512px"
@@ -67,6 +69,12 @@ view config =
                                 , onClose = window.onClose
                                 , onGraph = window.onGraph
                                 , onDragStart = Just (config.onWindowDragStart window.id)
+                                , onFocus =
+                                    if z == maxZ then
+                                        Nothing
+
+                                    else
+                                        Just (config.onWindowFocus window.id)
                                 , isActive = z == maxZ
                                 }
                             ]

@@ -38,6 +38,7 @@ type alias Model =
 
 type Msg
     = CloseWindow Int
+    | WindowFocus Int
     | WindowDragStart Int XY
     | DragMove XY
     | DragEnd
@@ -82,20 +83,22 @@ init () =
     , Cmd.none
     )
 
+
 focusWindow : Int -> Model -> Model
 focusWindow id model =
-             { model
-                | windows =
-                    model.windows
-                        |> List.sortBy
-                            (\( _, window ) ->
-                                if window.id == id then
-                                    0
+    { model
+        | windows =
+            model.windows
+                |> List.sortBy
+                    (\( _, window ) ->
+                        if window.id == id then
+                            0
 
-                                else
-                                    1
-                            )
-              }
+                        else
+                            1
+                    )
+    }
+
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -109,6 +112,13 @@ update msg model =
             , Cmd.none
             )
 
+        WindowFocus id ->
+            let _ = Debug.log "window focus" id in
+            ( model
+                |> focusWindow id
+            , Cmd.none
+            )
+
         WindowDragStart id position ->
             if model.dragging == NoDragging then
                 ( { model
@@ -119,7 +129,7 @@ update msg model =
                             , currentClientXY = position
                             }
                   }
-                  |> focusWindow id
+                    |> focusWindow id
                 , Cmd.none
                 )
 
@@ -208,4 +218,5 @@ view model =
                         )
                     )
         , onWindowDragStart = WindowDragStart
+        , onWindowFocus = WindowFocus
         }
