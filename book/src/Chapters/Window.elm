@@ -26,6 +26,7 @@ chapter =
                         ]
                     , onClose = Just (ElmBook.Actions.logAction "clicked close button")
                     , onGraph = Just (ElmBook.Actions.logAction "clicked graph button")
+                    , onDragStart = Nothing
                     }
               )
             , ( "No status bar, active"
@@ -37,6 +38,7 @@ chapter =
                     , statusBar = []
                     , onClose = Nothing
                     , onGraph = Nothing
+                    , onDragStart = Nothing
                     }
               )
             , ( "Full, inactive"
@@ -55,6 +57,7 @@ chapter =
                         ]
                     , onClose = Nothing
                     , onGraph = Nothing
+                    , onDragStart = Nothing
                     }
               )
             , ( "No status bar, inactive"
@@ -66,6 +69,7 @@ chapter =
                     , statusBar = []
                     , onClose = Nothing
                     , onGraph = Nothing
+                    , onDragStart = Nothing
                     }
               )
             ]

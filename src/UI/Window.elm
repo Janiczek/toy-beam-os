@@ -1,11 +1,16 @@
 module UI.Window exposing (Config, StatusBarItem, view)
 
+import Dict
 import Html exposing (Html)
 import Html.Attributes
+import Html.Attributes.Extra
+import Html.Events
 import Html.Extra
+import Json.Decode
 import UI.Color exposing (color)
 import UI.Divider
 import UI.WindowButton
+import XY exposing (XY)
 
 
 type alias Config msg =
@@ -16,6 +21,7 @@ type alias Config msg =
     , isActive : Bool
     , onClose : Maybe msg
     , onGraph : Maybe msg
+    , onDragStart : Maybe (XY -> msg)
     }
 
 
@@ -72,13 +78,33 @@ view config =
         ]
 
 
+titleRowId : Int -> String
+titleRowId windowId =
+    "title-row-" ++ String.fromInt windowId
+
+
 viewTitleRow : Config msg -> Html msg
 viewTitleRow config =
+    let
+        id =
+            titleRowId config.id
+    in
     Html.div
         [ Html.Attributes.style "display" "flex"
         , Html.Attributes.style "justify-content" "space-between"
         , Html.Attributes.style "align-items" "flex-start"
         , Html.Attributes.style "gap" "8px"
+        , Html.Attributes.style "user-select" "none"
+        , Html.Attributes.style "cursor" "move"
+        , Html.Attributes.id id
+        , config.onDragStart
+            |> Html.Attributes.Extra.attributeMaybe
+                (\onDragStart ->
+                    onMouseDownIfNotPreventDefault { parentId = id }
+                        (clientXYDecoder
+                            |> Json.Decode.map onDragStart
+                        )
+                )
         ]
         [ viewTitleText config
         , viewTitleButtons config
@@ -86,21 +112,28 @@ viewTitleRow config =
 
 
 viewTitleText : Config msg -> Html msg
-viewTitleText { isActive, title } =
+viewTitleText config =
     Html.div
         [ Html.Attributes.style "padding-left" "3px"
         , Html.Attributes.style "padding-bottom" "2px"
         , Html.Attributes.style "padding-top" "1px"
         , Html.Attributes.style "font-family" "Charcoal, sans-serif"
         , Html.Attributes.style "color"
-            (if isActive then
+            (if config.isActive then
                 color.activeWindowTitleText
 
              else
                 color.inactiveWindowTitleText
             )
         ]
-        [ Html.text title ]
+        [ Html.text config.title ]
+
+
+clientXYDecoder : Json.Decode.Decoder XY
+clientXYDecoder =
+    Json.Decode.map2 XY.fromInts
+        (Json.Decode.field "clientX" Json.Decode.int)
+        (Json.Decode.field "clientY" Json.Decode.int)
 
 
 viewTitleButtons : Config msg -> Html msg
@@ -114,10 +147,50 @@ viewTitleButtons windowConfig =
         , Html.Attributes.style "gap" "4px"
         , Html.Attributes.style "margin-right" "-1px"
         , Html.Attributes.style "margin-top" "1px"
+        , Html.Attributes.attribute "data-prevent-default" ""
         ]
         [ windowConfig.onGraph |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.graph { onClick = onClick, isDimmed = isWindowDimmed })
         , windowConfig.onClose |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.close { onClick = onClick, isDimmed = isWindowDimmed })
         ]
+
+
+{-| If mousedown happened on an element with `data-prevent-default`, the Msg will be emitted.
+-}
+onMouseDownIfNotPreventDefault : { parentId : String } -> Json.Decode.Decoder msg -> Html.Attribute msg
+onMouseDownIfNotPreventDefault { parentId } decoder =
+    let
+        verifyDescendant : Json.Decode.Value -> Json.Decode.Decoder msg
+        verifyDescendant originalContext =
+            Json.Decode.field "id" Json.Decode.string
+                |> Json.Decode.andThen
+                    (\currentId ->
+                        if currentId == parentId then
+                            case Json.Decode.decodeValue decoder originalContext of
+                                Ok msg ->
+                                    Json.Decode.succeed msg
+
+                                Err _ ->
+                                    Json.Decode.fail "didn't decode child decoder"
+
+                        else
+                            Json.Decode.field "dataset" (Json.Decode.dict Json.Decode.string)
+                                |> Json.Decode.andThen
+                                    (\dataset ->
+                                        if Dict.member "preventDefault" dataset then
+                                            Json.Decode.fail "prevent default"
+
+                                        else
+                                            Json.Decode.field "parentNode" (verifyDescendant originalContext)
+                                    )
+                    )
+    in
+    Html.Events.on "mousedown"
+        (Json.Decode.value
+            |> Json.Decode.andThen
+                (\originalContext ->
+                    Json.Decode.field "target" (verifyDescendant originalContext)
+                )
+        )
 
 
 viewContent : Html msg -> Html msg

@@ -5,10 +5,11 @@ import Html.Attributes
 import UI.MenuBar
 import UI.Wallpaper
 import UI.Window
+import XY exposing (XY)
 
 
 type alias ScreenWindow msg =
-    ( ( Int, Int )
+    ( XY
     , { id : Int
       , title : String
       , content : Html msg
@@ -23,6 +24,7 @@ type alias Config msg =
     -- The first window is active, the rest are in the background (dimmed)
     -- The window order determines the z-index of the windows.
     { windows : List (ScreenWindow msg)
+    , onWindowDragStart : Maybe (Int -> XY -> msg)
     }
 
 
@@ -35,6 +37,7 @@ view config =
         , Html.Attributes.style "background-size" "cover"
         , Html.Attributes.style "background-position" "center"
         , Html.Attributes.style "background-repeat" "no-repeat"
+        , Html.Attributes.style "border" "8px solid #000000"
         ]
         [ UI.MenuBar.view
         , Html.div [ Html.Attributes.style "position" "relative" ]
@@ -60,6 +63,7 @@ view config =
                                 , statusBar = window.statusBar
                                 , onClose = window.onClose
                                 , onGraph = window.onGraph
+                                , onDragStart = config.onWindowDragStart |> Maybe.map (\onDragStart -> onDragStart window.id)
 
                                 -- Right now, all windows are active. Let's figure out how we want the dimmed background windows to work.
                                 , isActive = True
