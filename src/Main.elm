@@ -219,4 +219,5 @@ view model =
                     )
         , onWindowDragStart = WindowDragStart
         , onWindowFocus = WindowFocus
+        , isDragging = model.dragging /= NoDragging
         }

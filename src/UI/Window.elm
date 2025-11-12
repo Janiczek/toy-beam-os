@@ -97,7 +97,7 @@ viewTitleRow config =
         , Html.Attributes.style "align-items" "flex-start"
         , Html.Attributes.style "gap" "8px"
         , Html.Attributes.style "user-select" "none"
-        , Html.Attributes.style "cursor" "move"
+        , Html.Attributes.style "cursor" "grab"
         , Html.Attributes.id id
         , config.onDragStart
             |> Html.Attributes.Extra.attributeMaybe

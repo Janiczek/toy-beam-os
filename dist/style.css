@@ -33,3 +33,6 @@ html, body {
 .window-button:active {
     background-position: 13px 0;
 }
+.is-dragging * {
+    cursor: grabbing !important;
+}
