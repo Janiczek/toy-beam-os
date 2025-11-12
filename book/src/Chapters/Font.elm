@@ -4,12 +4,14 @@ import ElmBook.Chapter
 import Html
 import Html.Attributes
 
+
 fonts : List String
 fonts =
     [ "Charcoal"
     , "ChiKareGo2"
     , "Geneva9.2"
     ]
+
 
 chapter : ElmBook.Chapter.Chapter x
 chapter =

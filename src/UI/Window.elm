@@ -2,10 +2,12 @@ module UI.Window exposing (Config, StatusBarItem, view)
 
 import Html exposing (Html)
 import Html.Attributes
+import Html.Attributes.Extra
+import Html.Extra
 import UI.Color exposing (color)
 import UI.Divider
 import UI.WindowButton
-import Html.Extra
+
 
 type alias Config msg =
     { title : String
@@ -76,17 +78,19 @@ viewTitleRow config =
         [ Html.Attributes.style "display" "flex"
         , Html.Attributes.style "justify-content" "space-between"
         , Html.Attributes.style "align-items" "flex-start"
+        , Html.Attributes.style "gap" "8px"
         ]
-        [ viewTitle config
+        [ viewTitleText config
         , viewTitleButtons config
         ]
 
 
-viewTitle : Config msg -> Html msg
-viewTitle { isActive, title } =
+viewTitleText : Config msg -> Html msg
+viewTitleText { isActive, title } =
     Html.div
         [ Html.Attributes.style "padding-left" "3px"
         , Html.Attributes.style "padding-bottom" "2px"
+        , Html.Attributes.style "padding-top" "1px"
         , Html.Attributes.style "font-family" "Charcoal, sans-serif"
         , Html.Attributes.style "color"
             (if isActive then
@@ -106,6 +110,7 @@ viewTitleButtons config =
         , Html.Attributes.style "gap" "4px"
         , Html.Attributes.style "margin-right" "-1px"
         , Html.Attributes.style "margin-top" "1px"
+        , Html.Attributes.Extra.attributeIf (not config.isActive) (Html.Attributes.style "opacity" "0.25")
         ]
         [ config.onGraph |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.graph { onClick = onClick })
         , config.onClose |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.close { onClick = onClick })
@@ -117,6 +122,9 @@ viewContent content =
     Html.div
         [ Html.Attributes.style "background-color" color.windowContentBg
         , Html.Attributes.style "border" ("1px solid " ++ color.windowContentBorder)
+        , Html.Attributes.style "min-width" "128px"
+        , Html.Attributes.style "min-height" "64px"
+        , Html.Attributes.style "padding" "4px 6px"
         ]
         [ content ]
 

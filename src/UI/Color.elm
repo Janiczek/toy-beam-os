@@ -6,7 +6,7 @@ type alias Color =
     { activeWindowOuterBorder : String
     , activeWindowInnerBottomRightBorder : String
     , activeWindowInnerTopLeftBorder : String
-    , inactiveWindowOuterBorder: String
+    , inactiveWindowOuterBorder : String
 
     -- chrome
     , activeChromeBg : String

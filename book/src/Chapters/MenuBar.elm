@@ -9,4 +9,4 @@ chapter : ElmBook.Chapter.Chapter x
 chapter =
     ElmBook.Chapter.chapter "MenuBar"
         |> ElmBook.Chapter.renderComponent
-               (UI.MenuBar.view)
+            UI.MenuBar.view
