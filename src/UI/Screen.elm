@@ -30,6 +30,9 @@ type alias Config msg =
 
 view : Config msg -> Html msg
 view config =
+    let
+        maxZ = List.length config.windows - 1
+    in
     Html.div
         [ Html.Attributes.style "width" "512px"
         , Html.Attributes.style "height" "384px"
@@ -64,9 +67,7 @@ view config =
                                 , onClose = window.onClose
                                 , onGraph = window.onGraph
                                 , onDragStart = config.onWindowDragStart |> Maybe.map (\onDragStart -> onDragStart window.id)
-
-                                -- Right now, all windows are active. Let's figure out how we want the dimmed background windows to work.
-                                , isActive = True
+                                , isActive = z == maxZ
                                 }
                             ]
                     )

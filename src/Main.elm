@@ -67,6 +67,15 @@ init () =
                 , onGraph = Nothing
                 }
               )
+            , ( ( 172, 78 )
+              , { id = 1
+                , title = "System Monitor"
+                , content = Html.text "Bla bla bla..."
+                , statusBar = []
+                , closable = False
+                , onGraph = Nothing
+                }
+              )
             ]
       , dragging = NoDragging
       }
