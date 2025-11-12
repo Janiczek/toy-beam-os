@@ -3,14 +3,27 @@ module Main exposing (main)
 import Browser
 import Html exposing (Html)
 import UI.Screen
+import UI.Window
 
 
 type alias Flags =
     ()
 
 
+type alias Window msg =
+    ( ( Int, Int )
+    , { id : Int
+      , title : String
+      , content : Html msg
+      , statusBar : List (UI.Window.StatusBarItem msg)
+      , closable : Bool
+      , onGraph : Maybe msg
+      }
+    )
+
+
 type alias Model =
-    { windows : List (UI.Screen.ScreenWindow Msg) }
+    { windows : List (Window Msg) }
 
 
 type Msg
@@ -37,7 +50,7 @@ init () =
                 , statusBar =
                     [ { label = "PID: 21", onClick = Nothing }
                     ]
-                , onClose = Just (CloseWindow 0)
+                , closable = True
                 , onGraph = Nothing
                 }
               )
@@ -68,4 +81,23 @@ subscriptions _ =
 view : Model -> Html Msg
 view model =
     UI.Screen.view
-        { windows = model.windows }
+        { windows =
+            model.windows
+                |> List.map
+                    (\( position, window ) ->
+                        ( position
+                        , { id = window.id
+                          , title = window.title
+                          , content = window.content
+                          , statusBar = window.statusBar
+                          , onClose =
+                                if window.closable then
+                                    Just (CloseWindow window.id)
+
+                                else
+                                    Nothing
+                          , onGraph = window.onGraph
+                          }
+                        )
+                    )
+        }
