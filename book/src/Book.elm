@@ -25,6 +25,7 @@ main =
             , Chapters.Divider.chapter
             , Chapters.Icon.chapter
             , Chapters.WindowButton.chapter
+
             --
             , Chapters.MenuBar.chapter
             , Chapters.Window.chapter

@@ -2,7 +2,6 @@ module UI.Window exposing (Config, StatusBarItem, view)
 
 import Html exposing (Html)
 import Html.Attributes
-import Html.Attributes.Extra
 import Html.Extra
 import UI.Color exposing (color)
 import UI.Divider
@@ -104,16 +103,19 @@ viewTitleText { isActive, title } =
 
 
 viewTitleButtons : Config msg -> Html msg
-viewTitleButtons config =
+viewTitleButtons windowConfig =
+    let
+        isWindowDimmed =
+            not windowConfig.isActive
+    in
     Html.div
         [ Html.Attributes.style "display" "flex"
         , Html.Attributes.style "gap" "4px"
         , Html.Attributes.style "margin-right" "-1px"
         , Html.Attributes.style "margin-top" "1px"
-        , Html.Attributes.Extra.attributeIf (not config.isActive) (Html.Attributes.style "opacity" "0.25")
         ]
-        [ config.onGraph |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.graph { onClick = onClick })
-        , config.onClose |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.close { onClick = onClick })
+        [ windowConfig.onGraph |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.graph { onClick = onClick, isDimmed = isWindowDimmed })
+        , windowConfig.onClose |> Html.Extra.viewMaybe (\onClick -> UI.WindowButton.close { onClick = onClick, isDimmed = isWindowDimmed })
         ]
 
 
