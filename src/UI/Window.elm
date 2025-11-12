@@ -9,7 +9,8 @@ import UI.WindowButton
 
 
 type alias Config msg =
-    { title : String
+    { id : Int
+    , title : String
     , content : Html msg
     , statusBar : List (StatusBarItem msg)
     , isActive : Bool

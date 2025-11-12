@@ -2,8 +2,8 @@ module Chapters.WindowButton exposing (chapter)
 
 import ElmBook.Actions
 import ElmBook.Chapter
-import UI.WindowButton
 import Html exposing (Html)
+import UI.WindowButton
 
 
 buttons : List ( String, UI.WindowButton.Config msg -> Html msg )

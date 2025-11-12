@@ -12,7 +12,8 @@ chapter =
         |> ElmBook.Chapter.renderComponentList
             [ ( "Full, active"
               , UI.Window.view
-                    { title = "Counter"
+                    { id = 0
+                    , title = "Counter"
                     , content = Html.text "Test"
                     , isActive = True
                     , statusBar =
@@ -29,7 +30,8 @@ chapter =
               )
             , ( "No status bar, active"
               , UI.Window.view
-                    { title = "About This Computer"
+                    { id = 0
+                    , title = "About This Computer"
                     , content = Html.text "Test"
                     , isActive = True
                     , statusBar = []
@@ -39,7 +41,8 @@ chapter =
               )
             , ( "Full, inactive"
               , UI.Window.view
-                    { title = "Control Panels"
+                    { id = 0
+                    , title = "Control Panels"
                     , content = Html.text "Test"
                     , isActive = False
                     , statusBar =
@@ -56,7 +59,8 @@ chapter =
               )
             , ( "No status bar, inactive"
               , UI.Window.view
-                    { title = "General Controls"
+                    { id = 0
+                    , title = "General Controls"
                     , content = Html.text "Test"
                     , isActive = False
                     , statusBar = []

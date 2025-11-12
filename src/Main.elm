@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html)
-import UI.Window
+import UI.Screen
 
 
 type alias Flags =
@@ -10,11 +10,11 @@ type alias Flags =
 
 
 type alias Model =
-    {}
+    { windows : List (UI.Screen.ScreenWindow Msg) }
 
 
 type Msg
-    = TodoMsg
+    = CloseWindow Int
 
 
 main : Program Flags Model Msg
@@ -28,29 +28,44 @@ main =
 
 
 init : Flags -> ( Model, Cmd Msg )
-init flags =
-    ( {}, Cmd.none )
+init () =
+    ( { windows =
+            [ ( ( 32, 64 )
+              , { id = 0
+                , title = "Hello, World!"
+                , content = Html.text "Try to close this window."
+                , statusBar =
+                    [ { label = "PID: 21", onClick = Nothing }
+                    ]
+                , onClose = Just (CloseWindow 0)
+                , onGraph = Nothing
+                }
+              )
+            ]
+      }
+    , Cmd.none
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        CloseWindow id ->
+            ( { model
+                | windows =
+                    model.windows
+                        |> List.filter (\( _, window ) -> window.id /= id)
+              }
+            , Cmd.none
+            )
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
 view : Model -> Html Msg
 view model =
-    UI.Window.view
-        { title = "Hello, World!"
-        , content = Html.text "Hello, World!"
-        , isActive = True
-        , statusBar =
-            [ { label = "PID: 21", onClick = Nothing }
-            ]
-        , onClose = Nothing
-        , onGraph = Nothing
-        }
+    UI.Screen.view
+        { windows = model.windows }

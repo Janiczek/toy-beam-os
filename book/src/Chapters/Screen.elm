@@ -15,9 +15,9 @@ chapter =
               , UI.Screen.view
                     { windows =
                         [ ( ( 32, 64 )
-                          , { title = "Hello, World!"
+                          , { id = 0
+                            , title = "Hello, World!"
                             , content = Html.text "First make it work, then make it beautiful."
-                            , isActive = True
                             , statusBar =
                                 [ { label = "PID: 21", onClick = Nothing }
                                 , { label = "Msgs: 3", onClick = Nothing }
@@ -27,9 +27,9 @@ chapter =
                             }
                           )
                         , ( ( 172, 78 )
-                          , { title = "System Monitor"
+                          , { id = 1
+                            , title = "System Monitor"
                             , content = Html.text ""
-                            , isActive = False
                             , statusBar = [ { label = "PID: 99", onClick = Nothing } ]
                             , onClose = Just (ElmBook.Actions.logAction "clicked close button")
                             , onGraph = Nothing
