@@ -16,7 +16,7 @@ import XY exposing (XY)
 type Status
     = Active
     | Dimmed
-    | Dragged
+    | Dragged XY
 
 
 type alias Config msg =
@@ -54,7 +54,7 @@ view config =
                 , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
                 ]
 
-            Dragged ->
+            Dragged (dx, dy) ->
                 [ Html.Attributes.style "border-style" "solid"
                 , Html.Attributes.style "border-image-source" "image-set(url('imgs/dragging-borders.png') 1x, url('imgs/dragging-borders@2x.png') 2x)"
                 , Html.Attributes.style "border-image-slice" "3"
@@ -62,6 +62,13 @@ view config =
                 , Html.Attributes.style "border-image-repeat" "repeat"
                 , Html.Attributes.style "border-image-outset" "0"
                 , Html.Attributes.style "image-rendering" "pixelated"
+                , Html.Attributes.style "transform"
+                    ("translate("
+                        ++ String.fromInt dx
+                        ++ "px, "
+                        ++ String.fromInt dy
+                        ++ "px)"
+                    )
                 ]
         )
         [ Html.div
@@ -83,10 +90,8 @@ view config =
                 Dimmed ->
                     [ Html.Attributes.style "border-color" "transparent" ]
 
-                Dragged ->
-                    [ Html.Attributes.Extra.attributeIf (config.status == Dragged)
-                        (Html.Attributes.style "visibility" "hidden")
-                    ]
+                Dragged _ ->
+                    [ Html.Attributes.style "visibility" "hidden" ]
              ]
                 |> List.concat
             )
@@ -145,7 +150,7 @@ viewTitleText config =
                 Dimmed ->
                     color.inactiveWindowTitleText
 
-                Dragged ->
+                Dragged _ ->
                     "transparent"
             )
         ]
@@ -258,7 +263,7 @@ viewStatusBarItem { status } item =
                 Dimmed ->
                     color.inactiveStatusBarText
 
-                Dragged ->
+                Dragged _ ->
                     "transparent"
             )
         ]

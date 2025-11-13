@@ -27,7 +27,7 @@ type alias Config msg =
     { windows : List (ScreenWindow msg)
     , onWindowDragStart : Int -> XY -> msg
     , onWindowFocus : Int -> msg
-    , draggingWindow : Maybe Int
+    , draggingWindow : Maybe (Int, XY)
     }
 
 
@@ -85,9 +85,9 @@ view config =
                                                 Just (config.onWindowFocus window.id)
                                 , status =
                                     case config.draggingWindow of
-                                        Just draggingWindowId ->
+                                        Just (draggingWindowId, deltaXY) ->
                                             if draggingWindowId == window.id then
-                                                UI.Window.Dragged
+                                                UI.Window.Dragged deltaXY
 
                                             else if z == maxZ then
                                                 UI.Window.Active

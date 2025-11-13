@@ -113,7 +113,10 @@ update msg model =
             )
 
         WindowFocus id ->
-            let _ = Debug.log "window focus" id in
+            let
+                _ =
+                    Debug.log "window focus" id
+            in
             ( model
                 |> focusWindow id
             , Cmd.none
@@ -219,7 +222,16 @@ view model =
                     )
         , onWindowDragStart = WindowDragStart
         , onWindowFocus = WindowFocus
-        , draggingWindow = case model.dragging of
-            NoDragging -> Nothing
-            DraggingWindow draggingWindow -> Just draggingWindow.windowId
+        , draggingWindow =
+            case model.dragging of
+                NoDragging ->
+                    Nothing
+
+                DraggingWindow draggingWindow ->
+                    Just
+                        ( draggingWindow.windowId
+                        , XY.sub
+                            draggingWindow.currentClientXY
+                            draggingWindow.startClientXY
+                        )
         }
