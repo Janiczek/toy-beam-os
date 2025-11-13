@@ -35,6 +35,7 @@ type alias Config msg =
 view : Config msg -> Html msg
 view config =
     let
+        maxZ : Int
         maxZ =
             List.length config.windows - 1
     in
@@ -43,7 +44,7 @@ view config =
             Nothing ->
                 Html.Attributes.Extra.empty
 
-            Just ( draggingWindowId, ( dx, dy ) ) ->
+            Just ( _, ( dx, dy ) ) ->
                 UI.Extra.cssVars
                     [ ( "--drag-x", String.fromInt dx ++ "px" )
                     , ( "--drag-y", String.fromInt dy ++ "px" )
@@ -100,7 +101,7 @@ view config =
                                             UI.Window.Active
                                                 { isDragging =
                                                     case config.draggingWindow of
-                                                        Just ( draggingWindowId, deltaXY ) ->
+                                                        Just ( draggingWindowId, _ ) ->
                                                             draggingWindowId == window.id
                                                         Nothing ->
                                                             False

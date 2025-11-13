@@ -9,7 +9,6 @@ import Html.Extra
 import Json.Decode
 import UI.Color exposing (color)
 import UI.Divider
-import UI.Extra
 import UI.WindowButton
 import XY exposing (XY)
 
@@ -97,6 +96,7 @@ titleRowId windowId =
 viewTitleRow : Config msg -> Html msg
 viewTitleRow config =
     let
+        id : String
         id =
             titleRowId config.id
     in
@@ -151,6 +151,7 @@ clientXYDecoder =
 viewTitleButtons : Config msg -> Html msg
 viewTitleButtons windowConfig =
     let
+        isWindowDimmed : Bool
         isWindowDimmed =
             windowConfig.status == Dimmed
     in
