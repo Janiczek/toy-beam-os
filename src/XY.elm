@@ -4,9 +4,11 @@ module XY exposing (XY, add, fromInts, sub)
 type alias XY =
     ( Int, Int )
 
+
 fromInts : Int -> Int -> XY
 fromInts x y =
     ( x, y )
+
 
 add : XY -> XY -> XY
 add ( x1, y1 ) ( x2, y2 ) =

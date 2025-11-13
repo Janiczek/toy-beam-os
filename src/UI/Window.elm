@@ -1,4 +1,4 @@
-module UI.Window exposing (Config, Status(..), StatusBarItem, view)
+module UI.Window exposing (Config, Status(..), StatusBarItem, draggedWindowClass, view)
 
 import Dict
 import Html exposing (Html)
@@ -9,14 +9,14 @@ import Html.Extra
 import Json.Decode
 import UI.Color exposing (color)
 import UI.Divider
+import UI.Extra
 import UI.WindowButton
 import XY exposing (XY)
 
 
 type Status
-    = Active
+    = Active { isDragging : Bool }
     | Dimmed
-    | Dragged XY
 
 
 type alias Config msg =
@@ -38,37 +38,27 @@ type alias StatusBarItem msg =
     }
 
 
+draggedWindowClass : String
+draggedWindowClass =
+    "dragged-window"
+
+
 view : Config msg -> Html msg
 view config =
     Html.div
         (case config.status of
-            Active ->
+            Active { isDragging } ->
                 [ Html.Attributes.style "border" ("1px solid " ++ color.activeWindowOuterBorder)
                 , Html.Attributes.style "background-color" color.activeChromeBg
+                , Html.Attributes.style "position" "relative"
                 , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
+                , Html.Attributes.Extra.attributeIf (isDragging) (Html.Attributes.class draggedWindowClass)
                 ]
 
             Dimmed ->
                 [ Html.Attributes.style "border" ("1px solid " ++ color.inactiveWindowOuterBorder)
                 , Html.Attributes.style "background-color" color.inactiveChromeBg
                 , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
-                ]
-
-            Dragged (dx, dy) ->
-                [ Html.Attributes.style "border-style" "solid"
-                , Html.Attributes.style "border-image-source" "image-set(url('imgs/dragging-borders.png') 1x, url('imgs/dragging-borders@2x.png') 2x)"
-                , Html.Attributes.style "border-image-slice" "3"
-                , Html.Attributes.style "border-image-width" "3px"
-                , Html.Attributes.style "border-image-repeat" "repeat"
-                , Html.Attributes.style "border-image-outset" "0"
-                , Html.Attributes.style "image-rendering" "pixelated"
-                , Html.Attributes.style "transform"
-                    ("translate("
-                        ++ String.fromInt dx
-                        ++ "px, "
-                        ++ String.fromInt dy
-                        ++ "px)"
-                    )
                 ]
         )
         [ Html.div
@@ -80,7 +70,7 @@ view config =
                , Html.Attributes.style "gap" "0px"
                ]
              , case config.status of
-                Active ->
+                Active _ ->
                     [ Html.Attributes.style "border-top-color" color.activeWindowInnerTopLeftBorder
                     , Html.Attributes.style "border-left-color" color.activeWindowInnerTopLeftBorder
                     , Html.Attributes.style "border-bottom-color" color.activeWindowInnerBottomRightBorder
@@ -89,9 +79,6 @@ view config =
 
                 Dimmed ->
                     [ Html.Attributes.style "border-color" "transparent" ]
-
-                Dragged _ ->
-                    [ Html.Attributes.style "visibility" "hidden" ]
              ]
                 |> List.concat
             )
@@ -144,14 +131,11 @@ viewTitleText config =
         , Html.Attributes.style "font-family" "Charcoal, sans-serif"
         , Html.Attributes.style "color"
             (case config.status of
-                Active ->
+                Active _ ->
                     color.activeWindowTitleText
 
                 Dimmed ->
                     color.inactiveWindowTitleText
-
-                Dragged _ ->
-                    "transparent"
             )
         ]
         [ Html.text config.title ]
@@ -257,14 +241,11 @@ viewStatusBarItem { status } item =
         [ Html.Attributes.style "display" "flex"
         , Html.Attributes.style "color"
             (case status of
-                Active ->
+                Active _ ->
                     color.activeStatusBarText
 
                 Dimmed ->
                     color.inactiveStatusBarText
-
-                Dragged _ ->
-                    "transparent"
             )
         ]
         [ Html.text item.label ]

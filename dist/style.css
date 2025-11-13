@@ -36,3 +36,18 @@ html, body {
 .is-dragging * {
     cursor: grabbing !important;
 }
+.dragged-window::before {
+    position: absolute;
+    content: '';
+    inset: 0;
+    border-style: solid;
+    border-image-source: image-set(url('imgs/dragging-borders.png') 1x, url('imgs/dragging-borders@2x.png') 2x);
+    border-image-slice: 3;
+    border-image-width: 3px;
+    border-image-repeat: repeat;
+    border-image-outset: 0;
+    image-rendering: pixelated;
+    transform: translate(var(--drag-x), var(--drag-y));
+    pointer-events: none;
+    z-index: 9999;
+}
