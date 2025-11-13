@@ -2,4 +2,8 @@
 
 ## TODO
 
-- [] status bar should overflow-ellipsis instead of forcing the window to be wider or wrapping the text inside the status bar
+- [ ] status bar should overflow-ellipsis instead of forcing the window to be wider or wrapping the text inside the status bar
+- [ ] resizing a window
+- [ ] vertical scrollbar
+- [ ] horizontal scrollbar + both scrollbars at once
+- [ ] top statusbar?
