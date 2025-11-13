@@ -81,7 +81,7 @@ chapter =
                     { id = 0
                     , title = "Control Panels"
                     , content = Html.text "Test"
-                    , status = UI.Window.Dragged (40,60)
+                    , status = UI.Window.Dragged (0,0)
                     , statusBar =
                         [ { label = "PID: 21", onClick = Nothing }
                         , { label = "Msgs: 3", onClick = Nothing }
@@ -101,7 +101,7 @@ chapter =
                     { id = 0
                     , title = "General Controls"
                     , content = Html.text "Test"
-                    , status = UI.Window.Dragged (40,60)
+                    , status = UI.Window.Dragged (0,0)
                     , statusBar = []
                     , onClose = Nothing
                     , onGraph = Nothing
