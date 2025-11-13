@@ -1,4 +1,4 @@
-module UI.Window exposing (Config, StatusBarItem, view)
+module UI.Window exposing (Config, Status(..), StatusBarItem, view)
 
 import Dict
 import Html exposing (Html)
@@ -13,12 +13,18 @@ import UI.WindowButton
 import XY exposing (XY)
 
 
+type Status
+    = Active
+    | Dimmed
+    | Dragged
+
+
 type alias Config msg =
     { id : Int
     , title : String
     , content : Html msg
     , statusBar : List (StatusBarItem msg)
-    , isActive : Bool
+    , status : Status
     , onClose : Maybe msg
     , onGraph : Maybe msg
     , onDragStart : Maybe (XY -> msg)
@@ -35,24 +41,29 @@ type alias StatusBarItem msg =
 view : Config msg -> Html msg
 view config =
     Html.div
-        [ Html.Attributes.style "border"
-            ("1px solid "
-                ++ (if config.isActive then
-                        color.activeWindowOuterBorder
+        (case config.status of
+            Active ->
+                [ Html.Attributes.style "border" ("1px solid " ++ color.activeWindowOuterBorder)
+                , Html.Attributes.style "background-color" color.activeChromeBg
+                , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
+                ]
 
-                    else
-                        color.inactiveWindowOuterBorder
-                   )
-            )
-        , Html.Attributes.style "background-color"
-            (if config.isActive then
-                color.activeChromeBg
+            Dimmed ->
+                [ Html.Attributes.style "border" ("1px solid " ++ color.inactiveWindowOuterBorder)
+                , Html.Attributes.style "background-color" color.inactiveChromeBg
+                , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
+                ]
 
-             else
-                color.inactiveChromeBg
-            )
-        , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
-        ]
+            Dragged ->
+                [ Html.Attributes.style "border-style" "solid"
+                , Html.Attributes.style "border-image-source" "image-set(url('imgs/dragging-borders.png') 1x, url('imgs/dragging-borders@2x.png') 2x)"
+                , Html.Attributes.style "border-image-slice" "3"
+                , Html.Attributes.style "border-image-width" "3px"
+                , Html.Attributes.style "border-image-repeat" "repeat"
+                , Html.Attributes.style "border-image-outset" "0"
+                , Html.Attributes.style "image-rendering" "pixelated"
+                ]
+        )
         [ Html.div
             ([ [ Html.Attributes.style "border-width" "1px"
                , Html.Attributes.style "border-style" "solid"
@@ -61,20 +72,26 @@ view config =
                , Html.Attributes.style "flex-direction" "column"
                , Html.Attributes.style "gap" "0px"
                ]
-             , if config.isActive then
-                [ Html.Attributes.style "border-top-color" color.activeWindowInnerTopLeftBorder
-                , Html.Attributes.style "border-left-color" color.activeWindowInnerTopLeftBorder
-                , Html.Attributes.style "border-bottom-color" color.activeWindowInnerBottomRightBorder
-                , Html.Attributes.style "border-right-color" color.activeWindowInnerBottomRightBorder
-                ]
+             , case config.status of
+                Active ->
+                    [ Html.Attributes.style "border-top-color" color.activeWindowInnerTopLeftBorder
+                    , Html.Attributes.style "border-left-color" color.activeWindowInnerTopLeftBorder
+                    , Html.Attributes.style "border-bottom-color" color.activeWindowInnerBottomRightBorder
+                    , Html.Attributes.style "border-right-color" color.activeWindowInnerBottomRightBorder
+                    ]
 
-               else
-                [ Html.Attributes.style "border-color" "transparent" ]
+                Dimmed ->
+                    [ Html.Attributes.style "border-color" "transparent" ]
+
+                Dragged ->
+                    [ Html.Attributes.Extra.attributeIf (config.status == Dragged)
+                        (Html.Attributes.style "visibility" "hidden")
+                    ]
              ]
                 |> List.concat
             )
             [ viewTitleRow config
-            , viewContent config.content
+            , viewContent config
             , viewStatusBar config
             ]
         ]
@@ -121,11 +138,15 @@ viewTitleText config =
         , Html.Attributes.style "padding-top" "1px"
         , Html.Attributes.style "font-family" "Charcoal, sans-serif"
         , Html.Attributes.style "color"
-            (if config.isActive then
-                color.activeWindowTitleText
+            (case config.status of
+                Active ->
+                    color.activeWindowTitleText
 
-             else
-                color.inactiveWindowTitleText
+                Dimmed ->
+                    color.inactiveWindowTitleText
+
+                Dragged ->
+                    "transparent"
             )
         ]
         [ Html.text config.title ]
@@ -142,7 +163,7 @@ viewTitleButtons : Config msg -> Html msg
 viewTitleButtons windowConfig =
     let
         isWindowDimmed =
-            not windowConfig.isActive
+            windowConfig.status == Dimmed
     in
     Html.div
         [ Html.Attributes.style "display" "flex"
@@ -195,8 +216,8 @@ onMouseDownIfNotPreventDefault { parentId } decoder =
         )
 
 
-viewContent : Html msg -> Html msg
-viewContent content =
+viewContent : Config msg -> Html msg
+viewContent config =
     Html.div
         [ Html.Attributes.style "background-color" color.windowContentBg
         , Html.Attributes.style "border" ("1px solid " ++ color.windowContentBorder)
@@ -204,7 +225,7 @@ viewContent content =
         , Html.Attributes.style "min-height" "64px"
         , Html.Attributes.style "padding" "4px 6px"
         ]
-        [ content ]
+        [ config.content ]
 
 
 viewStatusBar : Config msg -> Html msg
@@ -225,16 +246,20 @@ viewStatusBar config =
             )
 
 
-viewStatusBarItem : { config | isActive : Bool } -> StatusBarItem msg -> Html msg
-viewStatusBarItem { isActive } item =
+viewStatusBarItem : { config | status : Status } -> StatusBarItem msg -> Html msg
+viewStatusBarItem { status } item =
     Html.div
         [ Html.Attributes.style "display" "flex"
         , Html.Attributes.style "color"
-            (if isActive then
-                color.activeStatusBarText
+            (case status of
+                Active ->
+                    color.activeStatusBarText
 
-             else
-                color.inactiveStatusBarText
+                Dimmed ->
+                    color.inactiveStatusBarText
+
+                Dragged ->
+                    "transparent"
             )
         ]
         [ Html.text item.label ]

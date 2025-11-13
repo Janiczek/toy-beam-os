@@ -219,5 +219,7 @@ view model =
                     )
         , onWindowDragStart = WindowDragStart
         , onWindowFocus = WindowFocus
-        , isDragging = model.dragging /= NoDragging
+        , draggingWindow = case model.dragging of
+            NoDragging -> Nothing
+            DraggingWindow draggingWindow -> Just draggingWindow.windowId
         }

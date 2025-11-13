@@ -27,7 +27,7 @@ type alias Config msg =
     { windows : List (ScreenWindow msg)
     , onWindowDragStart : Int -> XY -> msg
     , onWindowFocus : Int -> msg
-    , isDragging : Bool
+    , draggingWindow : Maybe Int
     }
 
 
@@ -45,7 +45,7 @@ view config =
         , Html.Attributes.style "background-position" "center"
         , Html.Attributes.style "background-repeat" "no-repeat"
         , Html.Attributes.style "border" "8px solid #000000"
-        , Html.Attributes.Extra.attributeIf config.isDragging (Html.Attributes.class "is-dragging")
+        , Html.Attributes.Extra.attributeIf (config.draggingWindow /= Nothing) (Html.Attributes.class "is-dragging")
         ]
         [ UI.MenuBar.view
         , Html.div [ Html.Attributes.style "position" "relative" ]
@@ -73,12 +73,34 @@ view config =
                                 , onGraph = window.onGraph
                                 , onDragStart = Just (config.onWindowDragStart window.id)
                                 , onFocus =
-                                    if z == maxZ || config.isDragging then
-                                        Nothing
+                                    case config.draggingWindow of
+                                        Just _ ->
+                                            Nothing
 
-                                    else
-                                        Just (config.onWindowFocus window.id)
-                                , isActive = z == maxZ
+                                        Nothing ->
+                                            if z == maxZ then
+                                                Nothing
+
+                                            else
+                                                Just (config.onWindowFocus window.id)
+                                , status =
+                                    case config.draggingWindow of
+                                        Just draggingWindowId ->
+                                            if draggingWindowId == window.id then
+                                                UI.Window.Dragged
+
+                                            else if z == maxZ then
+                                                UI.Window.Active
+
+                                            else
+                                                UI.Window.Dimmed
+
+                                        Nothing ->
+                                            if z == maxZ then
+                                                UI.Window.Active
+
+                                            else
+                                                UI.Window.Dimmed
                                 }
                             ]
                     )
