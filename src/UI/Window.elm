@@ -1,4 +1,4 @@
-module UI.Window exposing (Config, Status(..), StatusBarItem, draggedWindowClass, view)
+module UI.Window exposing (Config, Status(..), StatusBarItem, draggedWindowClass_BOOK, view)
 
 import Dict
 import Html exposing (Html)
@@ -41,6 +41,9 @@ draggedWindowClass : String
 draggedWindowClass =
     "dragged-window"
 
+draggedWindowClass_BOOK : String
+draggedWindowClass_BOOK =
+    draggedWindowClass
 
 view : Config msg -> Html msg
 view config =

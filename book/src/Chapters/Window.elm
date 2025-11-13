@@ -129,7 +129,7 @@ chapter =
             , ( "Drag ghost"
               , notFullWidth <|
                     Html.div
-                        [ Html.Attributes.class UI.Window.draggedWindowClass
+                        [ Html.Attributes.class UI.Window.draggedWindowClass_BOOK
                         , Html.Attributes.style "width" "240px"
                         , Html.Attributes.style "height" "64px"
                         ]
