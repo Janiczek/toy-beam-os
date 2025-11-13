@@ -68,7 +68,7 @@ chapter =
                         ]
                       , onWindowDragStart = \a b -> ElmBook.Actions.logActionWithString "window dragged" (Debug.toString (a,b))
                       , onWindowFocus = ElmBook.Actions.logActionWith String.fromInt "window focused"
-                      , draggingWindow = Just (0, (40,60))
+                      , draggingWindow = Just (0, (0,0))
                     }
               )
             , ( "Dragging window in background"
@@ -98,7 +98,7 @@ chapter =
                         ]
                       , onWindowDragStart = \a b -> ElmBook.Actions.logActionWithString "window dragged" (Debug.toString (a,b))
                       , onWindowFocus = ElmBook.Actions.logActionWith String.fromInt "window focused"
-                      , draggingWindow = Just (1, (40,60))
+                      , draggingWindow = Just (1, (0,0))
                     }
               )
             ]
