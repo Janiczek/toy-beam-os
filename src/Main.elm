@@ -81,7 +81,13 @@ update msg model =
             )
 
         SetProcessView data ->
-            let _ = Debug.log "[renderer] SetProcessView" data in
+            let
+                _ =
+                    Debug.log "[renderer] SetProcessView"
+                        { pid = data.pid
+                        , view = Json.Encode.encode 0 data.view
+                        }
+            in
             case Json.Decode.decodeValue JsonUI.decoder data.view of
                 Err error ->
                     Debug.todo (Debug.toString ( "SetProcessView", data, error ))
@@ -96,7 +102,10 @@ update msg model =
                     )
 
         ProcessHasStopped pid ->
-            let _ = Debug.log "[renderer] ProcessHasStopped" pid in
+            let
+                _ =
+                    Debug.log "[renderer] ProcessHasStopped" pid
+            in
             ( { model
                 | screenManager =
                     model.screenManager
@@ -106,13 +115,19 @@ update msg model =
             )
 
         UserClosedWindow pid ->
-            let _ = Debug.log "[renderer] UserClosedWindow" pid in
+            let
+                _ =
+                    Debug.log "[renderer] UserClosedWindow" pid
+            in
             ( model
             , userClosedWindow pid
             )
 
         JsonUIEvent data ->
-            let _ = Debug.log "[renderer] JsonUIEvent" data in
+            let
+                _ =
+                    Debug.log "[renderer] JsonUIEvent" data
+            in
             ( model
             , jsonUiEvent data
             )
