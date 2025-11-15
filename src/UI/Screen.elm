@@ -1,4 +1,16 @@
-module UI.Screen exposing (Config, ScreenWindow, view)
+module UI.Screen exposing
+    ( Config, view
+    , ScreenWindow
+    , widthPx, heightPx
+    )
+
+{-|
+
+@docs Config, view
+@docs ScreenWindow
+@docs widthPx, heightPx
+
+-}
 
 import Html exposing (Html)
 import Html.Attributes
@@ -32,6 +44,16 @@ type alias Config msg =
     }
 
 
+widthPx : Int
+widthPx =
+    512
+
+
+heightPx : Int
+heightPx =
+    384
+
+
 view : Config msg -> Html msg
 view config =
     let
@@ -51,8 +73,8 @@ view config =
                     ]
         ]
         [ Html.div
-            [ Html.Attributes.style "width" "512px"
-            , Html.Attributes.style "height" "384px"
+            [ Html.Attributes.style "width" (String.fromInt widthPx ++ "px")
+            , Html.Attributes.style "height" (String.fromInt heightPx ++ "px")
             , Html.Attributes.style "background-image" ("url(" ++ UI.Wallpaper.erlang ++ ")")
             , Html.Attributes.style "background-size" "cover"
             , Html.Attributes.style "background-position" "center"
@@ -103,6 +125,7 @@ view config =
                                                     case config.draggingWindow of
                                                         Just ( draggingWindowId, _ ) ->
                                                             draggingWindowId == window.id
+
                                                         Nothing ->
                                                             False
                                                 }

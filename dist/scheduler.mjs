@@ -8,17 +8,21 @@ const log = (message) => {
 let nextUnusedPid = 0;
 const processes = new Map();
 
-export const send = (destinationPid, message) => {
+export const send = (destinationPid, message, sendViewToElm) => {
     log(`sending to ${destinationPid}: ${JSON.stringify(message)}`);
-    const generator = processes.get(destinationPid);
-    runCmd(generator.next(message).value);
+    const $process = processes.get(destinationPid);
+    const output = $process.next(message).value;
+    sendViewToElm(output.view);
+    runCmd(output.cmd);
 };
 
-export const spawn = async (onInit, onMsg) => {
+export const spawn = async (onInit, onMsg, view, sendViewToElm) => {
     const pid = nextUnusedPid++;
-    const processGenerator = childProcess(pid, onInit, onMsg);
-    runCmd(processGenerator.next().value);
-    processes.set(pid, processGenerator);
+    const $process = childProcess(pid, onInit, onMsg, view);
+    const output = $process.next().value;
+    sendViewToElm(output.view);
+    runCmd(output.cmd, sendViewToElm);
+    processes.set(pid, $process);
     return pid;
 };
 
@@ -27,11 +31,11 @@ type Cmd
     = { type: "None" }
     | { type: "Send", destination_pid: number, message: object }
 */
-function runCmd(cmd) {
+function runCmd(cmd, sendViewToElm) {
     if (cmd === null) return;
     switch (cmd.type) {
         case "Send":
-            send(cmd.destination_pid, cmd.message);
+            send(cmd.destination_pid, cmd.message, sendViewToElm);
             return;
         default:
             log(`unknown cmd: ${cmd.type}`);

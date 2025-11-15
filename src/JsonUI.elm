@@ -1,0 +1,234 @@
+module JsonUI exposing (JsonUI(..), decoder, view)
+
+import Dict exposing (Dict)
+import Html exposing (Html)
+import Html.Attributes
+import Json.Decode exposing (Decoder)
+
+
+type JsonUI
+    = Row { attributes : Dict String String, children : List JsonUI, events : List ( String, String ) }
+    | Column { attributes : Dict String String, children : List JsonUI, events : List ( String, String ) }
+    | Text { attributes : Dict String String, content : String }
+    | ButtonWithContent { attributes : Dict String String, content : String, events : List ( String, String ) }
+    | ButtonWithChildren { attributes : Dict String String, children : List JsonUI, events : List ( String, String ) }
+
+
+decoder : Decoder JsonUI
+decoder =
+    Json.Decode.field "type" Json.Decode.string
+        |> Json.Decode.andThen nodeDecoder
+
+
+nodeDecoder : String -> Decoder JsonUI
+nodeDecoder nodeType =
+    case nodeType of
+        "row" ->
+            Json.Decode.map3
+                (\attrs children events ->
+                    Row
+                        { attributes = attrs
+                        , children = children
+                        , events = events
+                        }
+                )
+                attributesFieldDecoder
+                childrenFieldDecoder
+                eventsFieldDecoder
+
+        "column" ->
+            Json.Decode.map3
+                (\attrs children events ->
+                    Column
+                        { attributes = attrs
+                        , children = children
+                        , events = events
+                        }
+                )
+                attributesFieldDecoder
+                childrenFieldDecoder
+                eventsFieldDecoder
+
+        "text" ->
+            Json.Decode.map2
+                (\attrs content ->
+                    Text
+                        { attributes = attrs
+                        , content = content
+                        }
+                )
+                attributesFieldDecoder
+                contentFieldDecoder
+
+        "button" ->
+            Json.Decode.map4
+                (\attrs content children events ->
+                    if content /= "" && children /= [] then
+                        Json.Decode.fail "Button cannot have both content and children"
+
+                    else if content /= "" then
+                        ButtonWithContent
+                            { attributes = attrs
+                            , content = content
+                            , events = events
+                            }
+                            |> Json.Decode.succeed
+
+                    else
+                        ButtonWithChildren
+                            { attributes = attrs
+                            , children = children
+                            , events = events
+                            }
+                            |> Json.Decode.succeed
+                )
+                attributesFieldDecoder
+                contentFieldDecoder
+                childrenFieldDecoder
+                eventsFieldDecoder
+                |> Json.Decode.andThen identity
+
+        _ ->
+            Json.Decode.fail ("Unknown node type: " ++ nodeType)
+
+
+attributesFieldDecoder : Decoder (Dict String String)
+attributesFieldDecoder =
+    Json.Decode.maybe (Json.Decode.field "attributes" attributesDecoder)
+        |> Json.Decode.map (Maybe.withDefault Dict.empty)
+
+
+{-| Example:
+
+```json
+{
+    "align-items": "center",
+    "justify-content": "start",
+    "gap": "8px"
+}
+```
+
+-}
+attributesDecoder : Decoder (Dict String String)
+attributesDecoder =
+    Json.Decode.dict Json.Decode.string
+
+
+childrenFieldDecoder : Decoder (List JsonUI)
+childrenFieldDecoder =
+    Json.Decode.maybe (Json.Decode.field "children" (Json.Decode.list (Json.Decode.lazy (\_ -> decoder))))
+        |> Json.Decode.map (Maybe.withDefault [])
+
+
+{-| Example:
+
+```json
+{"click": "button-pressed"}
+```
+
+-}
+eventDecoder : Decoder ( String, String )
+eventDecoder =
+    Json.Decode.keyValuePairs Json.Decode.string
+        |> Json.Decode.andThen
+            (\pairs ->
+                case pairs of
+                    [ pair ] ->
+                        Json.Decode.succeed pair
+
+                    _ ->
+                        Json.Decode.fail "Event object must have exactly one key-value pair"
+            )
+
+
+eventsFieldDecoder : Decoder (List ( String, String ))
+eventsFieldDecoder =
+    Json.Decode.maybe (Json.Decode.field "events" (Json.Decode.list eventDecoder))
+        |> Json.Decode.map (Maybe.withDefault [])
+
+
+contentFieldDecoder : Decoder String
+contentFieldDecoder =
+    Json.Decode.maybe (Json.Decode.field "content" Json.Decode.string)
+        |> Json.Decode.map (Maybe.withDefault "")
+
+
+contentDecoder : Decoder String
+contentDecoder =
+    Json.Decode.string
+
+
+view : JsonUI -> Html msg
+view jsonUi =
+    case jsonUi of
+        Row { attributes, children, events } ->
+            Html.div
+                (eventsToHtmlEvents events
+                    ++ attributesToHtmlAttributes attributes
+                )
+                (List.map view children)
+
+        Column { attributes, children, events } ->
+            Html.div
+                (eventsToHtmlEvents events
+                    ++ attributesToHtmlAttributes attributes
+                )
+                (List.map view children)
+
+        Text { attributes, content } ->
+            Html.span (attributesToHtmlAttributes attributes) [ Html.text content ]
+
+        ButtonWithContent { attributes, content, events } ->
+            Html.button
+                (eventsToHtmlEvents events
+                    ++ attributesToHtmlAttributes attributes
+                )
+                [ Html.text content ]
+
+        ButtonWithChildren { attributes, children, events } ->
+            Html.button
+                (eventsToHtmlEvents events
+                    ++ attributesToHtmlAttributes attributes
+                )
+                (List.map view children)
+
+
+attributesToHtmlAttributes : Dict String String -> List (Html.Attribute msg)
+attributesToHtmlAttributes attributes =
+    attributes
+        |> Dict.toList
+        |> List.filterMap attributeToHtmlAttribute
+
+
+attributeToHtmlAttribute : ( String, String ) -> Maybe (Html.Attribute msg)
+attributeToHtmlAttribute ( name, value ) =
+    case name of
+        "font-weight" ->
+            Just <| Html.Attributes.style "font-weight" value
+
+        _ ->
+            let
+                _ =
+                    Debug.log "Unknown attribute" ( name, value )
+            in
+            Nothing
+
+
+eventsToHtmlEvents : List ( String, String ) -> List (Html.Attribute msg)
+eventsToHtmlEvents events =
+    events
+        |> List.filterMap eventToHtmlEvent
+
+
+eventToHtmlEvent : ( String, String ) -> Maybe (Html.Attribute msg)
+eventToHtmlEvent ( event, identifier ) =
+    case event of
+        "click" ->
+            Just <| Debug.todo ("Click event: " ++ identifier)
+
+        _ ->
+            let
+                _ =
+                    Debug.log "Unknown event" ( event, identifier )
+            in
+            Nothing

@@ -1,23 +1,46 @@
-module ScreenManager exposing (Model, Msg(..), Window, init, subscriptions, update, view, Dragging(..))
+module ScreenManager exposing
+    ( Config, Model, Msg(..), init, update, view, subscriptions
+    , onProcessStopped, setProcessView
+    , Dragging(..), Window
+    )
 
-import Html exposing (Html)
+{-|
+
+@docs Config, Model, Msg, init, update, view, subscriptions
+@docs onProcessStopped, setProcessView
+@docs Dragging, Window
+
+-}
+
 import Browser.Events
+import Cmd.Extra
+import Dict exposing (Dict)
+import Html exposing (Html)
+import Json.Decode
+import JsonUI exposing (JsonUI)
+import PID exposing (PID)
 import UI.Screen
 import UI.Window
 import XY exposing (XY)
-import Json.Decode
+
+
+type alias Config msg =
+    { msg : Msg -> msg
+    , onCloseWindow : PID -> msg
+    }
 
 
 type alias Model =
-    { windows : List (Window Msg)
+    { windows : Dict PID (Window Msg)
+    , zOrder : List PID
     , dragging : Dragging
     }
 
 
 type Msg
-    = CloseWindow Int
-    | WindowFocus Int
-    | WindowDragStart Int XY
+    = CloseWindow PID
+    | WindowFocus PID
+    | WindowDragStart PID XY
     | DragMove XY
     | DragEnd
 
@@ -25,50 +48,64 @@ type Msg
 type Dragging
     = NoDragging
     | DraggingWindow
-        { windowId : Int
+        { windowPid : PID
         , startClientXY : XY
         , currentClientXY : XY
         }
 
 
 type alias Window msg =
-    ( XY
-    , { id : Int
-      , title : String
-      , content :
-            -- TODO maybe abstract away from Html msg?
-            Html msg
-      , statusBar : List (UI.Window.StatusBarItem msg)
-      , closable : Bool
-      , onGraph : Maybe msg
-      }
-    )
+    { position : XY
+    , pid : PID
+    , title : String
+    , jsonUi : JsonUI
+    , statusBar : List (UI.Window.StatusBarItem msg)
+    , closable : Bool
+    , onGraph : Maybe msg
+    }
 
 
 init : Model
 init =
-    { windows =
-        [ ( ( 32, 64 )
-          , { id = 0
+    let
+        win0 : Window Msg
+        win0 =
+            { position = ( 32, 64 )
+            , pid = 0
             , title = "Hello, World!"
-            , content = Html.text "Try to close this window."
+            , jsonUi =
+                JsonUI.Text
+                    { attributes = Dict.empty
+                    , content = "Try to close this window."
+                    }
             , statusBar =
                 [ { label = "PID: 21", onClick = Nothing }
                 ]
             , closable = True
             , onGraph = Nothing
             }
-          )
-        , ( ( 172, 78 )
-          , { id = 1
+
+        win1 : Window Msg
+        win1 =
+            { position = ( 172, 78 )
+            , pid = 1
             , title = "System Monitor"
-            , content = Html.text "Bla bla bla..."
+            , jsonUi =
+                JsonUI.Text
+                    { attributes = Dict.empty
+                    , content = "Bla bla bla..."
+                    }
             , statusBar = []
             , closable = False
             , onGraph = Nothing
             }
-          )
-        ]
+    in
+    { windows =
+        Dict.fromList
+            [ ( win0.pid, win0 )
+            , ( win1.pid, win1 )
+            ]
+    , zOrder = [ win0.pid, win1.pid ]
     , dragging = NoDragging
     }
 
@@ -77,23 +114,27 @@ view : Model -> Html Msg
 view model =
     UI.Screen.view
         { windows =
-            model.windows
-                |> List.map
-                    (\( position, window ) ->
-                        ( position
-                        , { id = window.id
-                          , title = window.title
-                          , content = window.content
-                          , statusBar = window.statusBar
-                          , onClose =
-                                if window.closable then
-                                    Just (CloseWindow window.id)
+            model.zOrder
+                |> List.filterMap
+                    (\pid ->
+                        Dict.get pid model.windows
+                            |> Maybe.map
+                                (\window ->
+                                    ( window.position
+                                    , { id = window.pid
+                                      , title = window.title
+                                      , content = JsonUI.view window.jsonUi
+                                      , statusBar = window.statusBar
+                                      , onClose =
+                                            if window.closable then
+                                                Just (CloseWindow window.pid)
 
-                                else
-                                    Nothing
-                          , onGraph = window.onGraph
-                          }
-                        )
+                                            else
+                                                Nothing
+                                      , onGraph = window.onGraph
+                                      }
+                                    )
+                                )
                     )
         , onWindowDragStart = WindowDragStart
         , onWindowFocus = WindowFocus
@@ -104,7 +145,7 @@ view model =
 
                 DraggingWindow draggingWindow ->
                     Just
-                        ( draggingWindow.windowId
+                        ( draggingWindow.windowPid
                         , XY.sub
                             draggingWindow.currentClientXY
                             draggingWindow.startClientXY
@@ -128,37 +169,43 @@ subscriptions model =
         Sub.none
 
 
-update : Msg -> Model -> Model
-update msg model =
+update : Config msg -> Msg -> Model -> ( Model, Cmd msg )
+update config msg model =
     case msg of
-        CloseWindow id ->
-            { model
-                | windows =
-                    model.windows
-                        |> List.filter (\( _, window ) -> window.id /= id)
-            }
+        CloseWindow pid ->
+            ( { model
+                | windows = Dict.remove pid model.windows
+                , zOrder = List.filter ((/=) pid) model.zOrder
+              }
+            , config.onCloseWindow pid
+                |> Cmd.Extra.perform
+            )
 
-        WindowFocus id ->
-            model
-                |> focusWindow id
+        WindowFocus pid ->
+            ( model
+                |> focusWindow pid
+            , Cmd.none
+            )
 
-        WindowDragStart id position ->
+        WindowDragStart pid position ->
             if model.dragging == NoDragging then
-                { model
+                ( { model
                     | dragging =
                         DraggingWindow
-                            { windowId = id
+                            { windowPid = pid
                             , startClientXY = position
                             , currentClientXY = position
                             }
-                }
-                    |> focusWindow id
+                  }
+                    |> focusWindow pid
+                , Cmd.none
+                )
 
             else
-                model
+                ( model, Cmd.none )
 
         DragMove newClientXY ->
-            { model
+            ( { model
                 | dragging =
                     case model.dragging of
                         NoDragging ->
@@ -166,47 +213,103 @@ update msg model =
 
                         DraggingWindow draggingWindow ->
                             DraggingWindow { draggingWindow | currentClientXY = newClientXY }
-            }
+              }
+            , Cmd.none
+            )
 
         DragEnd ->
             case model.dragging of
                 NoDragging ->
-                    model
+                    ( model, Cmd.none )
 
                 DraggingWindow draggingWindow ->
-                    { model
+                    let
+                        updatePosition window =
+                            if window.pid == draggingWindow.windowPid then
+                                { window
+                                    | position =
+                                        XY.add
+                                            window.position
+                                            (XY.sub
+                                                draggingWindow.currentClientXY
+                                                draggingWindow.startClientXY
+                                            )
+                                }
+
+                            else
+                                window
+                    in
+                    ( { model
                         | dragging = NoDragging
                         , windows =
-                            model.windows
-                                |> List.map
-                                    (\( position, window ) ->
-                                        if window.id == draggingWindow.windowId then
-                                            ( XY.add
-                                                position
-                                                (XY.sub
-                                                    draggingWindow.currentClientXY
-                                                    draggingWindow.startClientXY
-                                                )
-                                            , window
-                                            )
-
-                                        else
-                                            ( position, window )
-                                    )
-                    }
+                            Dict.update
+                                draggingWindow.windowPid
+                                (Maybe.map updatePosition)
+                                model.windows
+                      }
+                    , Cmd.none
+                    )
 
 
-focusWindow : Int -> Model -> Model
-focusWindow id model =
+focusWindow : PID -> Model -> Model
+focusWindow pid model =
+    let
+        withoutPid =
+            List.filter ((/=) pid) model.zOrder
+    in
+    { model | zOrder = pid :: withoutPid }
+
+
+onProcessStopped : PID -> Model -> Model
+onProcessStopped pid model =
+    { model
+        | windows = Dict.remove pid model.windows
+        , zOrder = List.filter ((/=) pid) model.zOrder
+    }
+
+
+setProcessView : PID -> JsonUI -> Model -> Model
+setProcessView pid jsonUi model =
+    case Dict.get pid model.windows of
+        Nothing ->
+            model
+                |> addProcessView pid jsonUi
+
+        Just window ->
+            model
+                |> replaceProcessView pid jsonUi window
+
+
+addProcessView : PID -> JsonUI -> Model -> Model
+addProcessView pid jsonUi model =
     { model
         | windows =
             model.windows
-                |> List.sortBy
-                    (\( _, window ) ->
-                        if window.id == id then
-                            0
+                |> Dict.insert pid (initWindow pid jsonUi)
+        , zOrder = pid :: model.zOrder -- by the virtue of adding it from the front, we incidentally focused it
+    }
 
-                        else
-                            1
-                    )
+
+replaceProcessView : PID -> JsonUI -> Window Msg -> Model -> Model
+replaceProcessView pid jsonUi window model =
+    { model
+        | windows =
+            model.windows
+                |> Dict.insert pid { window | jsonUi = jsonUi }
+    }
+        |> focusWindow pid
+
+
+initWindow : PID -> JsonUI -> Window Msg
+initWindow pid jsonUi =
+    { position = ( 24, 24 )
+    , pid = pid
+    , title = "TODO: make JsonUI provide a title"
+    , jsonUi = jsonUi
+    , statusBar =
+        [ { label = "PID: " ++ String.fromInt pid, onClick = Nothing }
+        , { label = "TODO provide with JsonUI", onClick = Nothing }
+        ]
+    , closable = True
+    , onGraph = Nothing
     }

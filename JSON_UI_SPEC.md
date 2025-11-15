@@ -19,7 +19,7 @@ Each node is a JSON object with at least a `"type"` field, which also determines
 }
 ```
 
-- `type`: (string) The type of UI node. Examples: `"row"`, `"column"`, `"text"`, `"button"`, `"input"`.
+- `type`: (string) The type of UI node. Examples: `"row"`, `"column"`, `"text"`, `"button"`.
 - `attributes`: (object) Key-value pairs representing properties and layout, modeled on CSS where possible.
 - `children`: (array) Child nodes; only valid for container types.
 - `content`: (string) Used for leaf nodes like text.
@@ -31,10 +31,8 @@ Each node is a JSON object with at least a `"type"` field, which also determines
 |--------|--------------------------------|--------------------------------------------------|:----------:|:--------:|:-------:|:------:|
 | row    | Flex row container             | Like CSS `display: flex; flex-direction: row`    |   ✅       |   ✅     |   ❌     |  ✅    |
 | column | Flex column container          | Like CSS `display: flex; flex-direction: column` |   ✅       |   ✅     |   ❌     |  ✅    |
-| box    | Generic block/div              |                                                  |   ✅       |   ✅     |   ❌     |  ✅    |
-| text   | Text leaf node                 | Uses `"content"`                                 |   ✅       |   ❌     |   ✅     |  ❌    |
-| button | Interactive button             | `"children"` for label                           |   ✅       |   ✅     |   ✅     |  ✅    |
-| input  | Interactive input              | `value`, `placeholder`                           |   ✅       |   ❌     |   ❌     |  ✅    |
+| text   | Text leaf node                 |                                                  |   ✅       |   ❌     |   ✅     |  ❌    |
+| button | Interactive button             |                                                  |   ✅       |   ✅     |   ✅     |  ✅    |
 
 ## 3. Attributes
 
@@ -47,11 +45,6 @@ Attribute names should match CSS property names, e.g.:
   - `width`, `height`, `min-width`, `max-width`, etc.
 
 Use CSS units for values: `"px"`, `"em"`, `"%"`, etc.
-
-### Non-CSS attributes
-
-- `value`: Controlled string value (inputs).
-- `placeholder`: Placeholder text for inputs.
 
 ## 4. Containers
 
