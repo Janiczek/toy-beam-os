@@ -70,18 +70,19 @@ std::optional<Msg> msg_from_js(const val& msg_obj) {
 }
 
 val cmd_to_js(const Cmd& cmd) {
-    val obj = val::object();
-    
     if (std::holds_alternative<CmdNone>(cmd)) {
-        obj.set("type", "None");
+        return val::null();
     } else if (std::holds_alternative<CmdSend>(cmd)) {
         auto& send = std::get<CmdSend>(cmd);
+        val obj = val::object();
         obj.set("type", "Send");
         obj.set("destination_pid", send.destination_pid);
         obj.set("message", send.message);
+        return obj;
     }
-    
-    return obj;
+    val::global("console").call<void>("log", 
+        std::string("[cpp_counter] Failed to convert Cmd to a JS value"));
+    return val::null();
 }
 
 val output_to_js(const Output& output) {

@@ -28,11 +28,8 @@ type Cmd
     | { type: "Send", destination_pid: number, message: object }
 */
 function runCmd(cmd) {
-    if (cmd === undefined) return;
+    if (cmd === null) return;
     switch (cmd.type) {
-        case "None":
-            log("ignoring Cmd.none");
-            return;
         case "Send":
             send(cmd.destination_pid, cmd.message);
             return;

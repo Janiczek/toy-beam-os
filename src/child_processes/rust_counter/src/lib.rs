@@ -81,9 +81,7 @@ fn msg_from_js(msg_obj: &JsValue) -> Result<Msg, serde_json::Error> {
 fn cmd_to_js(cmd: &Cmd) -> JsValue {
     match cmd {
         Cmd::None => {
-            let obj = js_sys::Object::new();
-            js_sys::Reflect::set(&obj, &"type".into(), &"None".into()).unwrap();
-            obj.into()
+            JsValue::NULL
         }
         Cmd::Send { destination_pid, message } => {
             let obj = js_sys::Object::new();
