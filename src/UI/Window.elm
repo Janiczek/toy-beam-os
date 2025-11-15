@@ -1,4 +1,18 @@
-module UI.Window exposing (Config, Status(..), StatusBarItem, draggedWindowClass_BOOK, view)
+module UI.Window exposing
+    ( Config, view
+    , Status(..), StatusBarItem
+    , mapStatusBarItem
+    , draggedWindowClass_BOOK
+    )
+
+{-|
+
+@docs Config, view
+@docs Status, StatusBarItem
+@docs mapStatusBarItem
+@docs draggedWindowClass_BOOK
+
+-}
 
 import Dict
 import Html exposing (Html)
@@ -41,9 +55,11 @@ draggedWindowClass : String
 draggedWindowClass =
     "dragged-window"
 
+
 draggedWindowClass_BOOK : String
 draggedWindowClass_BOOK =
     draggedWindowClass
+
 
 view : Config msg -> Html msg
 view config =
@@ -54,7 +70,7 @@ view config =
                 , Html.Attributes.style "background-color" color.activeChromeBg
                 , Html.Attributes.style "position" "relative"
                 , Html.Attributes.Extra.attributeMaybe Html.Events.onClick config.onFocus
-                , Html.Attributes.Extra.attributeIf (isDragging) (Html.Attributes.class draggedWindowClass)
+                , Html.Attributes.Extra.attributeIf isDragging (Html.Attributes.class draggedWindowClass)
                 ]
 
             Dimmed ->
@@ -253,3 +269,10 @@ viewStatusBarItem { status } item =
             )
         ]
         [ Html.text item.label ]
+
+
+mapStatusBarItem : (msg1 -> msg2) -> StatusBarItem msg1 -> StatusBarItem msg2
+mapStatusBarItem f item =
+    { label = item.label
+    , onClick = item.onClick |> Maybe.map f
+    }

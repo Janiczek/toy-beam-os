@@ -1,9 +1,17 @@
-module JsonUI exposing (JsonUI(..), decoder, view)
+module JsonUI exposing (JsonUI(..), OnEvent, decoder, view)
 
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes
+import Html.Events
 import Json.Decode exposing (Decoder)
+
+
+type alias OnEvent msg =
+    { eventType : String
+    , identifier : String
+    }
+    -> msg
 
 
 type JsonUI
@@ -158,39 +166,46 @@ contentDecoder =
     Json.Decode.string
 
 
-view : JsonUI -> Html msg
-view jsonUi =
+view : OnEvent msg -> JsonUI -> Html msg
+view onEvent jsonUi =
     case jsonUi of
         Row { attributes, children, events } ->
             Html.div
-                (eventsToHtmlEvents events
+                (eventsToHtmlEvents onEvent events
+                    ++ [ Html.Attributes.style "display" "flex"
+                       , Html.Attributes.style "flex-direction" "row"
+                       ]
                     ++ attributesToHtmlAttributes attributes
                 )
-                (List.map view children)
+                (List.map (view onEvent) children)
 
         Column { attributes, children, events } ->
             Html.div
-                (eventsToHtmlEvents events
+                (eventsToHtmlEvents onEvent events
+                    ++ [ Html.Attributes.style "display" "flex"
+                       , Html.Attributes.style "flex-direction" "column"
+                       ]
                     ++ attributesToHtmlAttributes attributes
                 )
-                (List.map view children)
+                (List.map (view onEvent) children)
 
         Text { attributes, content } ->
             Html.span (attributesToHtmlAttributes attributes) [ Html.text content ]
 
         ButtonWithContent { attributes, content, events } ->
+            -- TODO make Mac OS 9 styled buttons
             Html.button
-                (eventsToHtmlEvents events
+                (eventsToHtmlEvents onEvent events
                     ++ attributesToHtmlAttributes attributes
                 )
                 [ Html.text content ]
 
         ButtonWithChildren { attributes, children, events } ->
             Html.button
-                (eventsToHtmlEvents events
+                (eventsToHtmlEvents onEvent events
                     ++ attributesToHtmlAttributes attributes
                 )
-                (List.map view children)
+                (List.map (view onEvent) children)
 
 
 attributesToHtmlAttributes : Dict String String -> List (Html.Attribute msg)
@@ -214,17 +229,23 @@ attributeToHtmlAttribute ( name, value ) =
             Nothing
 
 
-eventsToHtmlEvents : List ( String, String ) -> List (Html.Attribute msg)
-eventsToHtmlEvents events =
+eventsToHtmlEvents : OnEvent msg -> List ( String, String ) -> List (Html.Attribute msg)
+eventsToHtmlEvents onEvent events =
     events
-        |> List.filterMap eventToHtmlEvent
+        |> List.filterMap (eventToHtmlEvent onEvent)
 
 
-eventToHtmlEvent : ( String, String ) -> Maybe (Html.Attribute msg)
-eventToHtmlEvent ( event, identifier ) =
+eventToHtmlEvent : OnEvent msg -> ( String, String ) -> Maybe (Html.Attribute msg)
+eventToHtmlEvent onEvent ( event, identifier ) =
     case event of
         "click" ->
-            Just <| Debug.todo ("Click event: " ++ identifier)
+            Just <|
+                Html.Events.onClick
+                    (onEvent
+                        { eventType = event
+                        , identifier = identifier
+                        }
+                    )
 
         _ ->
             let

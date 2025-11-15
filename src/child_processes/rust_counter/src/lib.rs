@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 use web_sys::console;
 
+mod json_ui;
+
 pub type Model = i32;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -98,4 +100,19 @@ fn to_output(model: Model, cmd: Cmd) -> JsValue {
     js_sys::Reflect::set(&obj, &"model".into(), &model.into()).unwrap();
     js_sys::Reflect::set(&obj, &"cmd".into(), &cmd_to_js(&cmd)).unwrap();
     obj.into()
+}
+
+#[wasm_bindgen]
+pub fn view(model: Model) -> JsValue {
+    use json_ui::JsonUI;
+
+    let ui = JsonUI::row(vec![
+        JsonUI::text(model.to_string()),
+        JsonUI::button("-".to_string(), "decrement".to_string()),
+        JsonUI::button("* 10".to_string(), "multiply-by-10".to_string()),
+        JsonUI::button("+ 1".to_string(), "increment-by-1".to_string()),
+        JsonUI::button("+ 5".to_string(), "increment-by-5".to_string()),
+    ]);
+
+    JsValue::from_serde(&ui).unwrap()
 }

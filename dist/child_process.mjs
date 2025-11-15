@@ -6,13 +6,17 @@ export function* childProcess(pid, onInit, onMsg, view) {
     const output = onInit();
     log(`onInit() --> ${JSON.stringify(output)}`)
     let model = output.model;
-    let message = yield {cmd: output.cmd, view: view(model)};
+    let modelView = view(model);
+    log(`view(model) --> ${JSON.stringify(modelView)}`)
+    let message = yield {cmd: output.cmd, view: modelView};
     // TODO add a way to kill the process
     while (true) {
         log(`got message: ${JSON.stringify(message)}`)
         const output = onMsg(message, model);
         log(`onMsg() --> ${JSON.stringify(output)}`)
         model = output.model;
-        message = yield {cmd: output.cmd, view: view(model)};
+        modelView = view(model);
+        log(`view(model) --> ${JSON.stringify(modelView)}`)
+        message = yield {cmd: output.cmd, view: modelView};
     }
 }

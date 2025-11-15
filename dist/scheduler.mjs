@@ -12,15 +12,15 @@ export const send = (destinationPid, message, sendViewToElm) => {
     log(`sending to ${destinationPid}: ${JSON.stringify(message)}`);
     const $process = processes.get(destinationPid);
     const output = $process.next(message).value;
-    sendViewToElm(output.view);
-    runCmd(output.cmd);
+    sendViewToElm(destinationPid, output.view);
+    runCmd(output.cmd, sendViewToElm);
 };
 
 export const spawn = async (onInit, onMsg, view, sendViewToElm) => {
     const pid = nextUnusedPid++;
     const $process = childProcess(pid, onInit, onMsg, view);
     const output = $process.next().value;
-    sendViewToElm(output.view);
+    sendViewToElm(pid, output.view);
     runCmd(output.cmd, sendViewToElm);
     processes.set(pid, $process);
     return pid;

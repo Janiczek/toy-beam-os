@@ -27,6 +27,12 @@ import XY exposing (XY)
 type alias Config msg =
     { msg : Msg -> msg
     , onCloseWindow : PID -> msg
+    , onJsonUIEvent :
+        { pid : PID
+        , eventType : String
+        , identifier : String
+        }
+        -> msg
     }
 
 
@@ -67,51 +73,14 @@ type alias Window msg =
 
 init : Model
 init =
-    let
-        win0 : Window Msg
-        win0 =
-            { position = ( 32, 64 )
-            , pid = 0
-            , title = "Hello, World!"
-            , jsonUi =
-                JsonUI.Text
-                    { attributes = Dict.empty
-                    , content = "Try to close this window."
-                    }
-            , statusBar =
-                [ { label = "PID: 21", onClick = Nothing }
-                ]
-            , closable = True
-            , onGraph = Nothing
-            }
-
-        win1 : Window Msg
-        win1 =
-            { position = ( 172, 78 )
-            , pid = 1
-            , title = "System Monitor"
-            , jsonUi =
-                JsonUI.Text
-                    { attributes = Dict.empty
-                    , content = "Bla bla bla..."
-                    }
-            , statusBar = []
-            , closable = False
-            , onGraph = Nothing
-            }
-    in
-    { windows =
-        Dict.fromList
-            [ ( win0.pid, win0 )
-            , ( win1.pid, win1 )
-            ]
-    , zOrder = [ win0.pid, win1.pid ]
+    { windows = Dict.empty
+    , zOrder = []
     , dragging = NoDragging
     }
 
 
-view : Model -> Html Msg
-view model =
+view : Config msg -> Model -> Html msg
+view config model =
     UI.Screen.view
         { windows =
             model.zOrder
@@ -123,21 +92,34 @@ view model =
                                     ( window.position
                                     , { id = window.pid
                                       , title = window.title
-                                      , content = JsonUI.view window.jsonUi
-                                      , statusBar = window.statusBar
+                                      , content =
+                                            window.jsonUi
+                                                |> JsonUI.view
+                                                    (\event ->
+                                                        config.onJsonUIEvent
+                                                            { pid = pid
+                                                            , eventType = event.eventType
+                                                            , identifier = event.identifier
+                                                            }
+                                                    )
+                                      , statusBar =
+                                            window.statusBar
+                                                |> List.map (UI.Window.mapStatusBarItem config.msg)
                                       , onClose =
                                             if window.closable then
-                                                Just (CloseWindow window.pid)
+                                                Just (config.msg <| CloseWindow window.pid)
 
                                             else
                                                 Nothing
-                                      , onGraph = window.onGraph
+                                      , onGraph =
+                                            window.onGraph
+                                                |> Maybe.map config.msg
                                       }
                                     )
                                 )
                     )
-        , onWindowDragStart = WindowDragStart
-        , onWindowFocus = WindowFocus
+        , onWindowDragStart = \pid position -> config.msg <| WindowDragStart pid position
+        , onWindowFocus = \pid -> config.msg <| WindowFocus pid
         , draggingWindow =
             case model.dragging of
                 NoDragging ->

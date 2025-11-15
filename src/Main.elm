@@ -18,6 +18,9 @@ port processHasStopped : (PID -> msg) -> Sub msg
 port userClosedWindow : PID -> Cmd msg
 
 
+port jsonUiEvent : { pid : PID, eventType : String, identifier : String } -> Cmd msg
+
+
 type alias Flags =
     ()
 
@@ -29,9 +32,17 @@ type alias Model =
 
 type Msg
     = ScreenManagerMsg ScreenManager.Msg
-    | SetProcessView { pid : PID, view : Json.Encode.Value }
+    | SetProcessView
+        { pid : PID
+        , view : Json.Encode.Value
+        }
     | ProcessHasStopped PID
     | UserClosedWindow PID
+    | JsonUIEvent
+        { pid : PID
+        , eventType : String
+        , identifier : String
+        }
 
 
 main : Program Flags Model Msg
@@ -61,6 +72,7 @@ update msg model =
                         |> ScreenManager.update
                             { msg = ScreenManagerMsg
                             , onCloseWindow = UserClosedWindow
+                            , onJsonUIEvent = JsonUIEvent
                             }
                             subMsg
             in
@@ -69,6 +81,7 @@ update msg model =
             )
 
         SetProcessView data ->
+            let _ = Debug.log "[renderer] SetProcessView" data in
             case Json.Decode.decodeValue JsonUI.decoder data.view of
                 Err error ->
                     Debug.todo (Debug.toString ( "SetProcessView", data, error ))
@@ -83,6 +96,7 @@ update msg model =
                     )
 
         ProcessHasStopped pid ->
+            let _ = Debug.log "[renderer] ProcessHasStopped" pid in
             ( { model
                 | screenManager =
                     model.screenManager
@@ -92,8 +106,15 @@ update msg model =
             )
 
         UserClosedWindow pid ->
+            let _ = Debug.log "[renderer] UserClosedWindow" pid in
             ( model
             , userClosedWindow pid
+            )
+
+        JsonUIEvent data ->
+            let _ = Debug.log "[renderer] JsonUIEvent" data in
+            ( model
+            , jsonUiEvent data
             )
 
 
@@ -109,5 +130,9 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    ScreenManager.view model.screenManager
-        |> Html.map ScreenManagerMsg
+    ScreenManager.view
+        { msg = ScreenManagerMsg
+        , onCloseWindow = UserClosedWindow
+        , onJsonUIEvent = JsonUIEvent
+        }
+        model.screenManager
