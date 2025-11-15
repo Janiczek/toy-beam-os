@@ -23,9 +23,9 @@ log('RUST');
 await rustCounterModule.default();
 const rustCounterPid = await spawn(rustCounterModule.on_init, rustCounterModule.on_msg, rustCounterModule.view, sendViewToElm);
 log(`RUST PID: ${rustCounterPid}`);
-send(rustCounterPid, {type: "IncrementBy", value: 1}, sendViewToElm);
-send(rustCounterPid, {type: "IncrementBy", value: 2}, sendViewToElm);
-send(rustCounterPid, {type: "Decrement"}, sendViewToElm);
+//send(rustCounterPid, {type: "IncrementBy", value: 1}, sendViewToElm);
+//send(rustCounterPid, {type: "IncrementBy", value: 2}, sendViewToElm);
+//send(rustCounterPid, {type: "Decrement"}, sendViewToElm);
 
 //log('CPP');
 //const cppCounter = await cppCounterInit();
