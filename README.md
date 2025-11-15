@@ -13,3 +13,12 @@
 ### Language
 
 - [ ] BEAM bytecode interpreter? Or my own, or a parser/interpreter for some other language, or something that can run WASM?
+
+### Scheduler
+
+- [ ] Single-threaded in Elm for now
+- [ ] WASM child processes
+  - [ ] send(from: PID, to: PID, msg: String)
+    - [ ] something other than String?
+  - [ ] as direct running of WASM modules as possible at first
+    - [ ] WebWorkers (multi-threading) later?

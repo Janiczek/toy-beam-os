@@ -1,5 +1,7 @@
 /book/elm-stuff/
 /elm-stuff/
-/dist/app.js
-/dist/book.js
+/dist/elm-renderer.js
+/dist/elm-book.js
+/dist/child_processes
+/src/child_processes/rust_counter/target
 .DS_Store

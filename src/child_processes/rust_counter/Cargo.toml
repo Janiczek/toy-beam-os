@@ -1,0 +1,23 @@
+[package]
+name = "rust_counter"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+gloo-utils = { version = "0.2.0", features = ["serde"] }
+js-sys = "0.3"
+log = "0.4.28"
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.6.5"
+serde_json = "1.0"
+wasm-bindgen = "0.2"
+wasm-log = "0.3.1"
+web-sys = { version = "0.3", features = ["console"] }
+workflow-panic-hook = "0.18.0"
+
+[profile.release]
+lto = true
+debug = true

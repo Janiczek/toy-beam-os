@@ -4,13 +4,13 @@
             "inputs": [
                 "src/Main.elm"
             ],
-            "output": "./dist/app.js"
+            "output": "./dist/elm-renderer.js"
         },
         "Book": {
             "inputs": [
                 "book/src/Book.elm"
             ],
-            "output": "./dist/book.js"
+            "output": "./dist/elm-book.js"
         }
     },
     "serve": "./dist"
