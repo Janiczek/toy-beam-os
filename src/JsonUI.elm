@@ -5,6 +5,7 @@ import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Json.Decode exposing (Decoder)
+import UI.Button
 
 
 type alias OnEvent msg =
@@ -193,15 +194,16 @@ view onEvent jsonUi =
             Html.span (attributesToHtmlAttributes attributes) [ Html.text content ]
 
         ButtonWithContent { attributes, content, events } ->
-            -- TODO make Mac OS 9 styled buttons
-            Html.button
+            UI.Button.view
+                { state = UI.Button.Default }
                 (eventsToHtmlEvents onEvent events
                     ++ attributesToHtmlAttributes attributes
                 )
                 [ Html.text content ]
 
         ButtonWithChildren { attributes, children, events } ->
-            Html.button
+            UI.Button.view
+                { state = UI.Button.Default }
                 (eventsToHtmlEvents onEvent events
                     ++ attributesToHtmlAttributes attributes
                 )

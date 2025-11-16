@@ -1,5 +1,6 @@
 module Book exposing (main)
 
+import Chapters.Button
 import Chapters.Color
 import Chapters.Divider
 import Chapters.Font
@@ -20,13 +21,15 @@ main =
             [ ElmBook.ThemeOptions.useHashBasedNavigation
             ]
         |> ElmBook.withChapters
+            -- Atoms
             [ Chapters.Color.chapter
             , Chapters.Font.chapter
             , Chapters.Divider.chapter
             , Chapters.Icon.chapter
+            , Chapters.Button.chapter
             , Chapters.WindowButton.chapter
 
-            --
+            -- Molecules
             , Chapters.MenuBar.chapter
             , Chapters.Window.chapter
             , Chapters.Wallpaper.chapter

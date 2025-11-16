@@ -22,6 +22,9 @@ type alias Color =
     , inactiveStatusBarText : String
     , activeWindowTitleText : String
     , inactiveWindowTitleText : String
+    , defaultButtonText : String
+    , activeButtonText : String
+    , disabledButtonText : String
 
     -- divider
     , dividerBg : String
@@ -51,6 +54,9 @@ color =
     , inactiveStatusBarText = "#8a8a8a"
     , activeWindowTitleText = "#262626"
     , inactiveWindowTitleText = "#818181"
+    , defaultButtonText = "#262626"
+    , activeButtonText = "#ffffff"
+    , disabledButtonText = "#9d9d9d"
 
     -- divider
     , dividerBg = "#888888"

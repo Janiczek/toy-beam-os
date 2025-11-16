@@ -14,7 +14,7 @@
     font-family: 'Charcoal';
     font-weight: 400;
     font-style: normal;
-    src: url("fonts/Charcoal.ttf?20251111") format('truetype');
+    src: url("fonts/Charcoal12Plain.ttf?20251111") format('truetype');
 }
 
 html, body {
@@ -50,4 +50,13 @@ html, body {
     transform: translate(var(--drag-x), var(--drag-y));
     pointer-events: none;
     z-index: 9999;
+}
+/* TODO is it possible to not duplicate these styles? CSS vars perhaps? */
+.ui-button:not(:disabled):active .ui-button-side {
+    background-image: url(imgs/button-active.svg) !important;
+    color: #ffffff !important;
+}
+.ui-button:not(:disabled):active .ui-button-middle {
+    background-image: url(imgs/button-active-middle.svg) !important;
+    color: #ffffff !important;
 }

@@ -21,6 +21,9 @@ colorFields =
     , ( .inactiveStatusBarText, "inactiveStatusBarText" )
     , ( .activeWindowTitleText, "activeWindowTitleText" )
     , ( .inactiveWindowTitleText, "inactiveWindowTitleText" )
+    , ( .defaultButtonText, "defaultButtonText" )
+    , ( .activeButtonText, "activeButtonText" )
+    , ( .disabledButtonText, "disabledButtonText" )
     , ( .dividerBg, "dividerBg" )
     , ( .dividerShadow, "dividerShadow" )
     ]
