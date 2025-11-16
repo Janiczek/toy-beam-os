@@ -12,10 +12,10 @@ Each node is a JSON object with at least a `"type"` field, which also determines
 ```json
 {
   "type": "node-type",
-  "attributes": { ... },
-  "children": [ ... ],
-  "content": "...",
-  "events": [ ... ]
+  "attributes": {},
+  "children": [],
+  "content": "",
+  "events": []
 }
 ```
 
@@ -93,7 +93,11 @@ Example:
 Clicking the button will send the following JSON to the process' `on_msg(msg,model)` function:
 
 ```json
-{"system": "view", data: {"click": "button-pressed"}}
+{
+  "type": "system_ui",
+  "eventType": "click",
+  "identifier": "button-pressed"
+}
 ```
 
 ## 6. Example
