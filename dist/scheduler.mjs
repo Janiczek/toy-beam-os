@@ -12,6 +12,7 @@ export const kill = (pid) => {
     const $process = processes.get(pid);
     if ($process === undefined) {
         log(`tried to kill non-existent process ${pid}`);
+        return;
     }
     $process.return();
     processes.delete(pid);
