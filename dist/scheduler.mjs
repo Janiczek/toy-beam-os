@@ -46,7 +46,7 @@ type Cmd
 function runCmd(cmd, sendViewToElm) {
     if (cmd === null) return;
     switch (cmd.type) {
-        case "Send":
+        case "send":
             send(cmd.destination_pid, cmd.message, sendViewToElm);
             return;
         default:

@@ -107,7 +107,7 @@ fn cmd_to_js(cmd: &Cmd) -> JsValue {
         }
         Cmd::Send { destination_pid, message } => {
             let obj = js_sys::Object::new();
-            js_sys::Reflect::set(&obj, &"type".into(), &"Send".into()).unwrap();
+            js_sys::Reflect::set(&obj, &"type".into(), &"send".into()).unwrap();
             js_sys::Reflect::set(&obj, &"destination_pid".into(), &(*destination_pid).into()).unwrap();
             js_sys::Reflect::set(&obj, &"message".into(), message).unwrap();
             obj.into()

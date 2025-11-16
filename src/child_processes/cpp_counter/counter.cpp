@@ -87,7 +87,7 @@ val cmd_to_js(const Cmd& cmd) {
     } else if (std::holds_alternative<CmdSend>(cmd)) {
         auto& send = std::get<CmdSend>(cmd);
         val obj = val::object();
-        obj.set("type", "Send");
+        obj.set("type", "send");
         obj.set("destination_pid", send.destination_pid);
         obj.set("message", send.message);
         return obj;
