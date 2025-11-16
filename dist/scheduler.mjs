@@ -12,6 +12,7 @@ export const kill = (pid) => {
     const $process = processes.get(pid);
     if ($process === undefined) {
         log(`tried to kill non-existent process ${pid}`);
+        return;
     }
     $process.return();
     processes.delete(pid);
@@ -40,8 +41,8 @@ export const spawn = (onInit, onMsg, view, sendViewToElm) => {
 
 /*
 type Cmd
-    = { type: "None" }
-    | { type: "Send", destination_pid: number, message: object }
+    = null
+    | { type: "send", destination_pid: number, message: object }
 */
 function runCmd(cmd, sendViewToElm) {
     if (cmd === null) return;
