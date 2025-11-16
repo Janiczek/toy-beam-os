@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <optional>
+#include "json_ui.h"
 
 using namespace emscripten;
 
@@ -133,8 +134,21 @@ val on_msg(const val& msg_obj, Model model) {
     return output_to_js(Output{new_model, cmd});
 }
 
+val view(Model model) {
+    auto ui = json_ui_row({
+        json_ui_text(std::to_string(model)),
+        json_ui_button("-", "decrement"),
+        json_ui_button("* 10", "multiply-by-10"),
+        json_ui_button("+ 1", "increment-by-1"),
+        json_ui_button("+ 5", "increment-by-5")
+    });
+    
+    return json_ui_to_js(ui);
+}
+
 EMSCRIPTEN_BINDINGS(counter) {
     function("on_init", &on_init);
     function("on_msg", &on_msg);
+    function("view", &view);
 }
 

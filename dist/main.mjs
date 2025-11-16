@@ -27,10 +27,10 @@ log(`RUST PID: ${rustCounterPid}`);
 //send(rustCounterPid, {type: "IncrementBy", value: 2}, sendViewToElm);
 //send(rustCounterPid, {type: "Decrement"}, sendViewToElm);
 
-//log('CPP');
-//const cppCounter = await cppCounterInit();
-//const cppCounterPid = await spawn(cppCounter.on_init, cppCounter.on_msg, cppCounter.view, sendViewToElm);
-//log(`CPP PID: ${cppCounterPid}`);
+log('CPP');
+const cppCounter = await cppCounterInit();
+const cppCounterPid = await spawn(cppCounter.on_init, cppCounter.on_msg, cppCounter.view, sendViewToElm);
+log(`CPP PID: ${cppCounterPid}`);
 //send(cppCounterPid, {type: "IncrementBy", value: 1}, sendViewToElm);
 //send(cppCounterPid, {type: "IncrementBy", value: 2}, sendViewToElm);
 //send(cppCounterPid, {type: "Decrement"}, sendViewToElm);
