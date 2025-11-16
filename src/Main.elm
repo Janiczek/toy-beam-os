@@ -9,7 +9,16 @@ import PID exposing (PID)
 import ScreenManager
 
 
-port setProcessView : ({ pid : PID, view : Json.Encode.Value } -> msg) -> Sub msg
+port setProcessView :
+    ({ pid : PID
+     , view :
+        { title : String
+        , body : Json.Encode.Value
+        }
+     }
+     -> msg
+    )
+    -> Sub msg
 
 
 port processHasStopped : (PID -> msg) -> Sub msg
@@ -34,7 +43,10 @@ type Msg
     = ScreenManagerMsg ScreenManager.Msg
     | SetProcessView
         { pid : PID
-        , view : Json.Encode.Value
+        , view :
+            { title : String
+            , body : Json.Encode.Value
+            }
         }
     | ProcessHasStopped PID
     | UserClosedWindow PID
@@ -85,18 +97,25 @@ update msg model =
                 _ =
                     Debug.log "[renderer] SetProcessView"
                         { pid = data.pid
-                        , view = Json.Encode.encode 0 data.view
+                        , title = data.view.title
+                        , body = Json.Encode.encode 0 data.view.body
                         }
             in
-            case Json.Decode.decodeValue JsonUI.decoder data.view of
+            case Json.Decode.decodeValue JsonUI.decoder data.view.body of
                 Err error ->
-                    Debug.todo (Debug.toString ( "SetProcessView", data, error ))
+                    Debug.todo
+                        (Debug.toString
+                            ( "SetProcessView"
+                            , data.view
+                            , error
+                            )
+                        )
 
                 Ok jsonUi ->
                     ( { model
                         | screenManager =
                             model.screenManager
-                                |> ScreenManager.setProcessView data.pid jsonUi
+                                |> ScreenManager.setProcessView data.pid data.view.title jsonUi
                       }
                     , Cmd.none
                     )

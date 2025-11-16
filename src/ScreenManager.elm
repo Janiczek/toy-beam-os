@@ -250,47 +250,46 @@ onProcessStopped pid model =
     }
 
 
-setProcessView : PID -> JsonUI -> Model -> Model
-setProcessView pid jsonUi model =
+setProcessView : PID -> String -> JsonUI -> Model -> Model
+setProcessView pid title jsonUi model =
     case Dict.get pid model.windows of
         Nothing ->
             model
-                |> addProcessView pid jsonUi
+                |> addProcessView pid title jsonUi
 
         Just window ->
             model
-                |> replaceProcessView pid jsonUi window
+                |> replaceProcessView pid title jsonUi window
 
 
-addProcessView : PID -> JsonUI -> Model -> Model
-addProcessView pid jsonUi model =
+addProcessView : PID -> String -> JsonUI -> Model -> Model
+addProcessView pid title jsonUi model =
     { model
         | windows =
             model.windows
-                |> Dict.insert pid (initWindow pid jsonUi)
+                |> Dict.insert pid (initWindow pid title jsonUi)
         , zOrder = pid :: model.zOrder -- by the virtue of adding it from the front, we incidentally focused it
     }
 
 
-replaceProcessView : PID -> JsonUI -> Window Msg -> Model -> Model
-replaceProcessView pid jsonUi window model =
+replaceProcessView : PID -> String -> JsonUI -> Window Msg -> Model -> Model
+replaceProcessView pid title jsonUi window model =
     { model
         | windows =
             model.windows
-                |> Dict.insert pid { window | jsonUi = jsonUi }
+                |> Dict.insert pid { window | title = title, jsonUi = jsonUi }
     }
         |> focusWindow pid
 
 
-initWindow : PID -> JsonUI -> Window Msg
-initWindow pid jsonUi =
+initWindow : PID -> String -> JsonUI -> Window Msg
+initWindow pid title jsonUi =
     { position = ( 24, 24 )
     , pid = pid
-    , title = "TODO: make JsonUI provide a title"
+    , title = title
     , jsonUi = jsonUi
     , statusBar =
         [ { label = "PID: " ++ String.fromInt pid, onClick = Nothing }
-        , { label = "TODO provide with JsonUI", onClick = Nothing }
         ]
     , closable = True
     , onGraph = Nothing

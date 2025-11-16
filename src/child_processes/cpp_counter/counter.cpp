@@ -143,7 +143,10 @@ val view(Model model) {
         json_ui_button("+ 5", "increment-by-5")
     });
     
-    return json_ui_to_js(ui);
+    val result = val::object();
+    result.set("title", "C++ Counter");
+    result.set("body", json_ui_to_js(ui));
+    return result;
 }
 
 EMSCRIPTEN_BINDINGS(counter) {

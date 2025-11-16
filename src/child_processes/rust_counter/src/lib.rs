@@ -114,5 +114,8 @@ pub fn view(model: Model) -> JsValue {
         JsonUI::button("+ 5".to_string(), "increment-by-5".to_string()),
     ]);
 
-    JsValue::from_serde(&ui).unwrap()
+    let obj = js_sys::Object::new();
+    js_sys::Reflect::set(&obj, &"title".into(), &"Rust Counter".into()).unwrap();
+    js_sys::Reflect::set(&obj, &"body".into(), &JsValue::from_serde(&ui).unwrap()).unwrap();
+    obj.into()
 }
