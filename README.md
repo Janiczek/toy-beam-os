@@ -45,6 +45,8 @@ There are two `Cmd`s currently available:
 
 JsonUI is a virtual DOM representation of the window for the process displayed in the OS.
 
+See also [JSON_UI_SPEC.md](./JSON_UI_SPEC.md).
+
 It is a JS object, eg.
 
 ```json
