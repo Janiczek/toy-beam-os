@@ -90,14 +90,11 @@ Events (eg. `{"click": "Decrement"}`) are passed to the user as the following `M
 
 ## TODO
 
-### UI
+### Scheduler
 
-- [ ] menu bar + menus
-- [ ] status bar should overflow-ellipsis instead of forcing the window to be wider or wrapping the text inside the status bar
-- [ ] resizing a window
-- [ ] vertical scrollbar
-- [ ] horizontal scrollbar + both scrollbars at once
-- [ ] top statusbar?
+- [ ] instrument the WASM files with yield points (to allow for scheduler reduction budget)
+- [ ] monitors/links between processes
+- [ ] catch child process crashes, cleanup, notify monitoring/linked processes and the OS
 
 ### OS (Elm app)
 
@@ -106,3 +103,12 @@ Events (eg. `{"click": "Decrement"}`) are passed to the user as the following `M
 ### JsonUI
 
 - [ ] inputs (value, placeholder), params in UI events
+
+### UI
+
+- [ ] menu bar + menus
+- [ ] status bar should overflow-ellipsis instead of forcing the window to be wider or wrapping the text inside the status bar
+- [ ] resizing a window
+- [ ] vertical scrollbar
+- [ ] horizontal scrollbar + both scrollbars at once
+- [ ] top statusbar?
