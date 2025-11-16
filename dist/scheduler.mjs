@@ -41,8 +41,8 @@ export const spawn = (onInit, onMsg, view, sendViewToElm) => {
 
 /*
 type Cmd
-    = { type: "None" }
-    | { type: "Send", destination_pid: number, message: object }
+    = null
+    | { type: "send", destination_pid: number, message: object }
 */
 function runCmd(cmd, sendViewToElm) {
     if (cmd === null) return;
