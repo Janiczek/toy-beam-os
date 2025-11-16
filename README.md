@@ -1,5 +1,7 @@
 # toy-beam-os
 
+![Screencast](https://github.com/Janiczek/toy-beam-os/raw/main/screencast.mp4)
+
 ## Architecture
 
 - Scheduler written in JS, using JS Generators for child processes
@@ -102,6 +104,9 @@ Events (eg. `{"click": "Decrement"}`) are passed to the user as the following `M
 - [ ] allow drag'n'dropping custom WASM modules to install them in the OS
 - [ ] allow saving/loading the current state of the OS
 - [ ] allow showing graphs for links between processes
+- [ ] allow showing a history of Msgs received by a process
+- [ ] allow spawning a system log process with a table of what would normally be `console.log()`s
+  - eg. "tried to send a message `{...}` to a nonexistent PID `0`"
 
 ### JsonUI
 
