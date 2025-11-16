@@ -98,7 +98,10 @@ Events (eg. `{"click": "Decrement"}`) are passed to the user as the following `M
 
 ### OS (Elm app)
 
-- [ ] allow spawning the Rust and C++ counters from the OS menu bar
+- [ ] allow spawning the Rust and C++ counter examples from the OS menu bar
+- [ ] allow drag'n'dropping custom WASM modules to install them in the OS
+- [ ] allow saving/loading the current state of the OS
+- [ ] allow showing graphs for links between processes
 
 ### JsonUI
 
@@ -112,3 +115,9 @@ Events (eg. `{"click": "Decrement"}`) are passed to the user as the following `M
 - [ ] vertical scrollbar
 - [ ] horizontal scrollbar + both scrollbars at once
 - [ ] top statusbar?
+
+### Libraries
+
+- [ ] make a SDK for Cmd, JsonUI, common tasks the child processes need to handle (eg. system vs user messages)
+  - [ ] Rust
+  - [ ] C++
