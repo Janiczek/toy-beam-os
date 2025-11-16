@@ -1,6 +1,6 @@
 # toy-beam-os
 
-![Screencast](https://github.com/Janiczek/toy-beam-os/raw/main/screencast.mp4)
+[![Screencast](https://github.com/Janiczek/toy-beam-os/raw/main/screencast.gif)](https://github.com/Janiczek/toy-beam-os/raw/main/screencast.mp4)
 
 ## Architecture
 
