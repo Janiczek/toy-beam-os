@@ -8,15 +8,24 @@ const log = (message) => {
 let nextUnusedPid = 0;
 const processes = new Map();
 
+export const kill = (pid) => {
+    const $process = processes.get(pid);
+    if ($process === undefined) {
+        log(`tried to kill non-existent process ${pid}`);
+    } else {
+        $process.return();
+        processes.delete(pid);
+    }
+};
+
 export const send = (destinationPid, message, sendViewToElm) => {
-    log(`sending to ${destinationPid}: ${JSON.stringify(message)}`);
     const $process = processes.get(destinationPid);
     const output = $process.next(message).value;
     sendViewToElm(destinationPid, output.view);
     runCmd(output.cmd, sendViewToElm);
 };
 
-export const spawn = async (onInit, onMsg, view, sendViewToElm) => {
+export const spawn = (onInit, onMsg, view, sendViewToElm) => {
     const pid = nextUnusedPid++;
     const $process = childProcess(pid, onInit, onMsg, view);
     const output = $process.next().value;

@@ -18,7 +18,12 @@ struct Decrement {};
 
 struct MultiplyBy10 {};
 
-using Msg = std::variant<IncrementBy, Decrement, MultiplyBy10>;
+struct SystemUI {
+    std::string eventType;
+    std::string identifier;
+};
+
+using Msg = std::variant<IncrementBy, Decrement, MultiplyBy10, SystemUI>;
 
 struct CmdNone {};
 
@@ -45,6 +50,11 @@ val msg_to_js(const Msg& msg) {
         obj.set("type", "Decrement");
     } else if (std::holds_alternative<MultiplyBy10>(msg)) {
         obj.set("type", "MultiplyBy10");
+    } else if (std::holds_alternative<SystemUI>(msg)) {
+        auto& ui = std::get<SystemUI>(msg);
+        obj.set("type", "system_ui");
+        obj.set("eventType", ui.eventType);
+        obj.set("identifier", ui.identifier);
     }
     
     return obj;
@@ -65,6 +75,13 @@ std::optional<Msg> msg_from_js(const val& msg_obj) {
         return Decrement{};
     } else if (type == "MultiplyBy10") {
         return MultiplyBy10{};
+    } else if (type == "system_ui") {
+        if (msg_obj.hasOwnProperty("eventType") && msg_obj.hasOwnProperty("identifier")) {
+            return SystemUI{
+                msg_obj["eventType"].as<std::string>(),
+                msg_obj["identifier"].as<std::string>()
+            };
+        }
     }
     
     return std::nullopt;
@@ -110,6 +127,23 @@ std::pair<Model, Cmd> on_msg_impl(const Msg& msg, Model model) {
     else if (std::holds_alternative<MultiplyBy10>(msg)) {
         Model new_model = model * 10;
         return {new_model, CmdNone{}};
+    }
+    else if (std::holds_alternative<SystemUI>(msg)) {
+        auto& ui = std::get<SystemUI>(msg);
+        if (ui.eventType == "click") {
+            if (ui.identifier == "increment-by-1") {
+                return on_msg_impl(IncrementBy{1}, model);
+            } else if (ui.identifier == "increment-by-5") {
+                return on_msg_impl(IncrementBy{5}, model);
+            } else if (ui.identifier == "decrement") {
+                return on_msg_impl(Decrement{}, model);
+            } else if (ui.identifier == "multiply-by-10") {
+                return on_msg_impl(MultiplyBy10{}, model);
+            } else {
+                val::global("console").call<void>("log", 
+                    std::string("[cpp_counter] Unknown identifier: ") + ui.identifier);
+            }
+        }
     }
     
     return {model, CmdNone{}};

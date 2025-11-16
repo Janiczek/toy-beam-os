@@ -13,6 +13,12 @@ pub enum Msg {
     IncrementBy { value: i32 },
     Decrement,
     MultiplyBy10,
+    #[serde(rename = "system_ui")]
+    SystemUI {
+        #[serde(rename = "eventType")]
+        event_type: String,
+        identifier: String,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -68,6 +74,22 @@ fn on_msg_impl(msg: Msg, model: Model) -> (Model, Cmd) {
         Msg::MultiplyBy10 => {
             let new_model: Model = model * 10;
             (new_model, Cmd::None)
+        }
+        Msg::SystemUI { event_type, identifier } => {
+            if event_type == "click" {
+                match identifier.as_str() {
+                    "increment-by-1" => on_msg_impl(Msg::IncrementBy { value: 1 }, model),
+                    "increment-by-5" => on_msg_impl(Msg::IncrementBy { value: 5 }, model),
+                    "decrement" => on_msg_impl(Msg::Decrement, model),
+                    "multiply-by-10" => on_msg_impl(Msg::MultiplyBy10, model),
+                    _ => {
+                        console::log_1(&format!("Unknown identifier: {}", identifier).into());
+                        (model, Cmd::None)
+                    }
+                }
+            } else {
+                (model, Cmd::None)
+            }
         }
     }
 }
