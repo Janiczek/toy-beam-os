@@ -4,26 +4,24 @@
 #include <string>
 #include <memory>
 #include <optional>
-#include "json_ui.h"
+#include "json_ui.hpp"
 
 using namespace emscripten;
 
 using Model = int32_t;
 
-struct IncrementBy {
-    int32_t value;
-};
+struct Increment {};
 
 struct Decrement {};
 
-struct MultiplyBy10 {};
+struct PokePID0 {};
 
 struct SystemUI {
     std::string eventType;
     std::string identifier;
 };
 
-using Msg = std::variant<IncrementBy, Decrement, MultiplyBy10, SystemUI>;
+using Msg = std::variant<Increment, Decrement, PokePID0, SystemUI>;
 
 struct CmdNone {};
 
@@ -42,14 +40,12 @@ struct Output {
 val msg_to_js(const Msg& msg) {
     val obj = val::object();
     
-    if (std::holds_alternative<IncrementBy>(msg)) {
-        auto& inc = std::get<IncrementBy>(msg);
-        obj.set("type", "IncrementBy");
-        obj.set("value", inc.value);
+    if (std::holds_alternative<Increment>(msg)) {
+        obj.set("type", "Increment");
     } else if (std::holds_alternative<Decrement>(msg)) {
         obj.set("type", "Decrement");
-    } else if (std::holds_alternative<MultiplyBy10>(msg)) {
-        obj.set("type", "MultiplyBy10");
+    } else if (std::holds_alternative<PokePID0>(msg)) {
+        obj.set("type", "PokePID0");
     } else if (std::holds_alternative<SystemUI>(msg)) {
         auto& ui = std::get<SystemUI>(msg);
         obj.set("type", "system_ui");
@@ -67,14 +63,12 @@ std::optional<Msg> msg_from_js(const val& msg_obj) {
     
     std::string type = msg_obj["type"].as<std::string>();
     
-    if (type == "IncrementBy") {
-        if (msg_obj.hasOwnProperty("value")) {
-            return IncrementBy{msg_obj["value"].as<int32_t>()};
-        }
+    if (type == "Increment") {
+        return Increment{};
     } else if (type == "Decrement") {
         return Decrement{};
-    } else if (type == "MultiplyBy10") {
-        return MultiplyBy10{};
+    } else if (type == "PokePID0") {
+        return PokePID0{};
     } else if (type == "system_ui") {
         if (msg_obj.hasOwnProperty("eventType") && msg_obj.hasOwnProperty("identifier")) {
             return SystemUI{
@@ -111,34 +105,30 @@ val output_to_js(const Output& output) {
 }
 
 std::pair<Model, Cmd> on_msg_impl(const Msg& msg, Model model) {
-    if (std::holds_alternative<IncrementBy>(msg)) {
-        auto& inc = std::get<IncrementBy>(msg);
-        Model new_model = model + inc.value;
+    if (std::holds_alternative<Increment>(msg)) {
+        Model new_model = model + 1;
         return {new_model, CmdNone{}};
     } 
     else if (std::holds_alternative<Decrement>(msg)) {
         Model new_model = model - 1;
+        return {new_model, CmdNone{}};
+    }
+    else if (std::holds_alternative<PokePID0>(msg)) {
         Cmd cmd = CmdSend{
             0,
-            msg_to_js(MultiplyBy10{})
+            msg_to_js(Decrement{})
         };
-        return {new_model, cmd};
-    }
-    else if (std::holds_alternative<MultiplyBy10>(msg)) {
-        Model new_model = model * 10;
-        return {new_model, CmdNone{}};
+        return {model, cmd};
     }
     else if (std::holds_alternative<SystemUI>(msg)) {
         auto& ui = std::get<SystemUI>(msg);
         if (ui.eventType == "click") {
-            if (ui.identifier == "increment-by-1") {
-                return on_msg_impl(IncrementBy{1}, model);
-            } else if (ui.identifier == "increment-by-5") {
-                return on_msg_impl(IncrementBy{5}, model);
+            if (ui.identifier == "increment") {
+                return on_msg_impl(Increment{}, model);
             } else if (ui.identifier == "decrement") {
                 return on_msg_impl(Decrement{}, model);
-            } else if (ui.identifier == "multiply-by-10") {
-                return on_msg_impl(MultiplyBy10{}, model);
+            } else if (ui.identifier == "poke-pid-0") {
+                return on_msg_impl(PokePID0{}, model);
             } else {
                 val::global("console").call<void>("log", 
                     std::string("[cpp_counter] Unknown identifier: ") + ui.identifier);
@@ -169,12 +159,15 @@ val on_msg(const val& msg_obj, Model model) {
 }
 
 val view(Model model) {
-    auto ui = json_ui_row({
-        json_ui_text(std::to_string(model)),
-        json_ui_button("-", "decrement"),
-        json_ui_button("* 10", "multiply-by-10"),
-        json_ui_button("+ 1", "increment-by-1"),
-        json_ui_button("+ 5", "increment-by-5")
+    auto ui = json_ui_column({
+        json_ui_row_centered({
+            json_ui_button("-", "decrement"),
+            json_ui_text(std::to_string(model)),
+            json_ui_button("+", "increment")
+        }),
+        json_ui_row_centered({
+            json_ui_button("Poke PID 0", "poke-pid-0")
+        })
     });
     
     val result = val::object();

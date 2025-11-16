@@ -233,6 +233,11 @@ viewContent config =
         , Html.Attributes.style "min-width" "128px"
         , Html.Attributes.style "min-height" "64px"
         , Html.Attributes.style "padding" "4px 6px"
+        , Html.Attributes.style "display" "flex"
+        , Html.Attributes.style "flex-direction" "column"
+        , Html.Attributes.style "gap" "8px"
+        , Html.Attributes.style "align-items" "center"
+        , Html.Attributes.style "justify-content" "center"
         ]
         [ config.content ]
 

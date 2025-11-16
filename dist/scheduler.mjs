@@ -12,14 +12,17 @@ export const kill = (pid) => {
     const $process = processes.get(pid);
     if ($process === undefined) {
         log(`tried to kill non-existent process ${pid}`);
-    } else {
-        $process.return();
-        processes.delete(pid);
     }
+    $process.return();
+    processes.delete(pid);
 };
 
 export const send = (destinationPid, message, sendViewToElm) => {
     const $process = processes.get(destinationPid);
+    if ($process === undefined) {
+        log(`tried to send to non-existent process ${destinationPid}`);
+        return;
+    }
     const output = $process.next(message).value;
     sendViewToElm(destinationPid, output.view);
     runCmd(output.cmd, sendViewToElm);

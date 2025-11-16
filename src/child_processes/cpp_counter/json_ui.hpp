@@ -52,7 +52,31 @@ struct JsonUI {
 // JsonUI helper functions
 JsonUIPtr json_ui_row(std::vector<JsonUIPtr> children) {
     return std::make_shared<JsonUI>(JsonUIRow{
-        Attributes{},
+        Attributes{
+            {"gap", "8px"}
+        },
+        std::move(children),
+        Events{}
+    });
+}
+
+JsonUIPtr json_ui_row_centered(std::vector<JsonUIPtr> children) {
+    return std::make_shared<JsonUI>(JsonUIRow{
+        Attributes{
+            {"justify-content", "center"},
+            {"align-items", "center"},
+            {"gap", "8px"}
+        },
+        std::move(children),
+        Events{}
+    });
+}
+
+JsonUIPtr json_ui_column(std::vector<JsonUIPtr> children) {
+    return std::make_shared<JsonUI>(JsonUIColumn{
+        Attributes{
+            {"gap", "8px"}
+        },
         std::move(children),
         Events{}
     });

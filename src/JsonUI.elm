@@ -5,6 +5,7 @@ import Html exposing (Html)
 import Html.Attributes
 import Html.Events
 import Json.Decode exposing (Decoder)
+import Set exposing (Set)
 import UI.Button
 
 
@@ -217,18 +218,27 @@ attributesToHtmlAttributes attributes =
         |> List.filterMap attributeToHtmlAttribute
 
 
+allowedAttributes : Set String
+allowedAttributes =
+    Set.fromList
+        [ "font-weight"
+    , "justify-content"
+        , "align-items"
+        , "gap"
+        ]
+
+
 attributeToHtmlAttribute : ( String, String ) -> Maybe (Html.Attribute msg)
 attributeToHtmlAttribute ( name, value ) =
-    case name of
-        "font-weight" ->
-            Just <| Html.Attributes.style "font-weight" value
+    if Set.member name allowedAttributes then
+        Just <| Html.Attributes.style name value
 
-        _ ->
-            let
-                _ =
-                    Debug.log "Unknown attribute" ( name, value )
-            in
-            Nothing
+    else
+        let
+            _ =
+                Debug.log "Unknown attribute" ( name, value )
+        in
+        Nothing
 
 
 eventsToHtmlEvents : OnEvent msg -> List ( String, String ) -> List (Html.Attribute msg)

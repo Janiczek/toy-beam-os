@@ -5,6 +5,7 @@ CXX = em++
 
 # Source and output
 SRC = counter.cpp
+HEADERS = json_ui.hpp
 OUT_DIR = ../../../dist/child_processes/cpp_counter
 OUT_JS = $(OUT_DIR)/counter.js
 OUT_WASM = $(OUT_DIR)/counter.wasm
@@ -28,7 +29,7 @@ $(OUT_DIR):
 	mkdir -p $(OUT_DIR)
 
 # Build the WASM module
-$(OUT_JS): $(SRC) | $(OUT_DIR)
+$(OUT_JS): $(SRC) $(HEADERS) | $(OUT_DIR)
 	$(CXX) $(CXXFLAGS) $(SRC) -o $(OUT_JS)
 
 # Clean build artifacts

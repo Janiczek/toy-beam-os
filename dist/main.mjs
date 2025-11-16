@@ -3,7 +3,6 @@ import cppCounterInit from "./child_processes/cpp_counter/counter.js";
 import * as rustCounterModule from "./child_processes/rust_counter/rust_counter.js";
 
 const log = (message) => { console.log(`[main] ${message}`); };
-const error = (message) => { console.error(`[main] ${message}`); };
 
 const renderer = window.Elm.Main.init({ node: document.getElementById("elm") });
 
@@ -20,12 +19,12 @@ renderer.ports.jsonUiEvent.subscribe(({pid, eventType, identifier}) => {
 });
 
 
-log('RUST');
+log('spawning rust_counter.wasm');
 await rustCounterModule.default();
 const rustCounterPid = spawn(rustCounterModule.on_init, rustCounterModule.on_msg, rustCounterModule.view, sendViewToElm);
-log(`RUST PID: ${rustCounterPid}`);
+log(`got PID: ${rustCounterPid}`);
 
-log('CPP');
+log('spawning cpp_counter.wasm');
 const cppCounter = await cppCounterInit();
 const cppCounterPid = spawn(cppCounter.on_init, cppCounter.on_msg, cppCounter.view, sendViewToElm);
-log(`CPP PID: ${cppCounterPid}`);
+log(`got PID: ${cppCounterPid}`);

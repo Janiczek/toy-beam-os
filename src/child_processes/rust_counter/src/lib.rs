@@ -10,9 +10,9 @@ pub type Model = i32;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Msg {
-    IncrementBy { value: i32 },
+    Increment,
     Decrement,
-    MultiplyBy10,
+    PokePID0,
     #[serde(rename = "system_ui")]
     SystemUI {
         #[serde(rename = "eventType")]
@@ -59,29 +59,27 @@ pub fn on_msg(msg_obj: JsValue, model: Model) -> JsValue {
 
 fn on_msg_impl(msg: Msg, model: Model) -> (Model, Cmd) {
     match msg {
-        Msg::IncrementBy { value } => {
-            let new_model: Model = model + value;
+        Msg::Increment => {
+            let new_model: Model = model + 1;
             (new_model, Cmd::None)
         }
         Msg::Decrement => {
             let new_model: Model = model - 1;
+            (new_model, Cmd::None)
+        }
+        Msg::PokePID0 => {
             let cmd = Cmd::Send {
                 destination_pid: 0,
-                message: msg_to_js(&Msg::MultiplyBy10),
+                message: msg_to_js(&Msg::Decrement),
             };
-            (new_model, cmd)
-        }
-        Msg::MultiplyBy10 => {
-            let new_model: Model = model * 10;
-            (new_model, Cmd::None)
+            (model, cmd)
         }
         Msg::SystemUI { event_type, identifier } => {
             if event_type == "click" {
                 match identifier.as_str() {
-                    "increment-by-1" => on_msg_impl(Msg::IncrementBy { value: 1 }, model),
-                    "increment-by-5" => on_msg_impl(Msg::IncrementBy { value: 5 }, model),
+                    "increment" => on_msg_impl(Msg::Increment, model),
                     "decrement" => on_msg_impl(Msg::Decrement, model),
-                    "multiply-by-10" => on_msg_impl(Msg::MultiplyBy10, model),
+                    "poke-pid-0" => on_msg_impl(Msg::PokePID0, model),
                     _ => {
                         console::log_1(&format!("Unknown identifier: {}", identifier).into());
                         (model, Cmd::None)
@@ -128,12 +126,15 @@ fn to_output(model: Model, cmd: Cmd) -> JsValue {
 pub fn view(model: Model) -> JsValue {
     use json_ui::JsonUI;
 
-    let ui = JsonUI::row(vec![
-        JsonUI::text(model.to_string()),
-        JsonUI::button("-".to_string(), "decrement".to_string()),
-        JsonUI::button("* 10".to_string(), "multiply-by-10".to_string()),
-        JsonUI::button("+ 1".to_string(), "increment-by-1".to_string()),
-        JsonUI::button("+ 5".to_string(), "increment-by-5".to_string()),
+    let ui = JsonUI::column(vec![
+        JsonUI::row_centered(vec![
+            JsonUI::button("-".to_string(), "decrement".to_string()),
+            JsonUI::text(model.to_string()),
+            JsonUI::button("+".to_string(), "increment".to_string()),
+        ]),
+        JsonUI::row_centered(vec![
+            JsonUI::button("Poke PID 0".to_string(), "poke-pid-0".to_string()),
+        ]),
     ]);
 
     let obj = js_sys::Object::new();

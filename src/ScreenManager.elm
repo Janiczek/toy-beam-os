@@ -19,6 +19,7 @@ import Html exposing (Html)
 import Json.Decode
 import JsonUI exposing (JsonUI)
 import PID exposing (PID)
+import Set exposing (Set)
 import UI.Screen
 import UI.Window
 import XY exposing (XY)
@@ -267,7 +268,7 @@ addProcessView pid title jsonUi model =
     { model
         | windows =
             model.windows
-                |> Dict.insert pid (initWindow pid title jsonUi)
+                |> Dict.insert pid (initWindow pid title jsonUi model.windows)
         , zOrder = pid :: model.zOrder -- by the virtue of adding it from the front, we incidentally focused it
     }
 
@@ -279,12 +280,39 @@ replaceProcessView pid title jsonUi window model =
             model.windows
                 |> Dict.insert pid { window | title = title, jsonUi = jsonUi }
     }
-        |> focusWindow pid
 
 
-initWindow : PID -> String -> JsonUI -> Window Msg
-initWindow pid title jsonUi =
-    { position = ( 24, 24 )
+initWindow : PID -> String -> JsonUI -> Dict PID (Window Msg) -> Window Msg
+initWindow pid title jsonUi windows =
+    let
+        positions : Set XY
+        positions =
+            windows
+                |> Dict.values
+                |> List.map .position
+                |> Set.fromList
+
+        idealPosition : XY
+        idealPosition =
+            ( 24, 24 )
+
+        step : XY
+        step =
+            ( 12, 12 )
+
+        finalPosition : XY
+        finalPosition =
+            nextPosition idealPosition
+
+        nextPosition : XY -> XY
+        nextPosition position =
+            if Set.member position positions then
+                nextPosition (XY.add step position)
+
+            else
+                position
+    in
+    { position = finalPosition
     , pid = pid
     , title = title
     , jsonUi = jsonUi

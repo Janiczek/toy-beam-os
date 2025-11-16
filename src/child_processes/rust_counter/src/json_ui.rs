@@ -41,8 +41,32 @@ pub enum JsonUI {
 
 impl JsonUI {
     pub fn row(children: Vec<JsonUI>) -> Self {
+        let mut attributes = HashMap::new();
+        attributes.insert("gap".to_string(), "8px".to_string());
         JsonUI::Row {
-            attributes: HashMap::new(),
+            attributes,
+            children,
+            events: Vec::new(),
+        }
+    }
+
+    pub fn row_centered(children: Vec<JsonUI>) -> Self {
+        let mut attributes = HashMap::new();
+        attributes.insert("justify-content".to_string(), "center".to_string());
+        attributes.insert("align-items".to_string(), "center".to_string());
+        attributes.insert("gap".to_string(), "8px".to_string());
+        JsonUI::Row {
+            attributes,
+            children,
+            events: Vec::new(),
+        }
+    }
+
+    pub fn column(children: Vec<JsonUI>) -> Self {
+        let mut attributes = HashMap::new();
+        attributes.insert("gap".to_string(), "8px".to_string());
+        JsonUI::Column {
+            attributes,
             children,
             events: Vec::new(),
         }
@@ -58,7 +82,7 @@ impl JsonUI {
     pub fn button(content: String, click_event_id: String) -> Self {
         let mut event_map = HashMap::new();
         event_map.insert("click".to_string(), click_event_id);
-        
+
         JsonUI::Button {
             attributes: HashMap::new(),
             content,
@@ -67,4 +91,3 @@ impl JsonUI {
         }
     }
 }
-
